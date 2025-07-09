@@ -13,7 +13,7 @@ Backend: Node.js + NestJS
 
 ORM: TypeORM
 
-قاعدة البيانات: MySQL
+قاعدة البيانات: Postgre
 
 مدة التسليم: 10 أيام
 
