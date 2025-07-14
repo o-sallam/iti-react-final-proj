@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Search, Filter, Phone, Mail, MapPin, Building } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, Filter, Phone,Wallet , Mail, MapPin, Building } from 'lucide-react';
 import Modal from '../components/Modal';
 import SupplierForm from '../components/supplierForm';
 import { suppliersService } from '../services/supplierService';
@@ -176,6 +176,12 @@ const Suppliers = () => {
                   <MapPin size={16} className="text-gray-400" />
                   <span>{supplier.address}</span>
                 </div>
+
+                <div className="flex items-center space-x-3 text-sm text-gray-600">
+  <Wallet size={16} className="text-gray-400" />
+  <span>{supplier.accountBalance} EGP</span>
+</div>
+
               </div>
 
               <div className="mt-4 pt-4 border-t border-gray-100">
