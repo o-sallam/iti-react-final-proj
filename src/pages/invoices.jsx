@@ -192,7 +192,7 @@ useEffect(() => {
             <input
               type="text"
               placeholder="البحث برقم الفاتورة أو اسم المورد..."
-              className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10"
+              className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 pr-10"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -271,27 +271,27 @@ useEffect(() => {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => handleEditInvoice(invoice)}
-                          className="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600"
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                           title="تعديل"
                         >
                           <Edit size={16} />
                         </button>
                         <button
-                          className="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-green-500 shadow-theme-xs hover:bg-green-600"
+                          className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                           title="عرض"
                           onClick={() => {}}
                         >
                           <Eye size={16} />
                         </button>
                         <button
-                          className="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-purple-500 shadow-theme-xs hover:bg-purple-600"
+                          className="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
                           title="تحميل"
                         >
                           <Download size={16} />
                         </button>
                         <button
                           onClick={() => handleDeleteInvoice(invoice.id)}
-                          className="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-red-500 shadow-theme-xs hover:bg-red-600"
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                           title="حذف"
                         >
                           <Trash2 size={16} />
