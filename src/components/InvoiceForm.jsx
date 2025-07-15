@@ -206,7 +206,7 @@ return (
           className={`w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${
             errors.invoiceNumber ? 'border-red-500' : 'border-gray-300'
           }`}
-          placeholder="رقم الفاتورة"
+          placeholder="أدخل رقم الفاتورة"
         />
         {errors.invoiceNumber && (
           <p className="text-red-500 text-xs mt-1">{errors.invoiceNumber}</p>
@@ -245,6 +245,7 @@ return (
           className={`w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${
             errors.invoiceDate ? 'border-red-500' : 'border-gray-300'
           }`}
+          placeholder="أدخل تاريخ الفاتورة"
         />
         {errors.invoiceDate && (
           <p className="text-red-500 text-xs mt-1">{errors.invoiceDate}</p>
@@ -289,9 +290,10 @@ return (
         <button
           type="button"
           onClick={addItem}
-          className="bg-green-600 text-white px-3 py-1 rounded-md hover:bg-green-700 text-xs"
+          className="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-green-500 shadow-theme-xs hover:bg-green-600"
         >
-          + إضافة بند
+          <Plus size={16} className="mr-1" />
+          إضافة بند
         </button>
       </div>
 
@@ -307,6 +309,7 @@ return (
                 className={`w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${
                   errors[`item_${index}_description`] ? 'border-red-500' : 'border-gray-300'
                 }`}
+                placeholder="أدخل وصف المنتج"
               />
             </div>
 
@@ -320,6 +323,7 @@ return (
                   errors[`item_${index}_quantity`] ? 'border-red-500' : 'border-gray-300'
                 }`}
                 min="1"
+                placeholder="أدخل الكمية"
               />
             </div>
 
@@ -334,6 +338,7 @@ return (
                 }`}
                 min="0"
                 step="0.01"
+                placeholder="أدخل سعر الوحدة"
               />
             </div>
 
@@ -348,9 +353,9 @@ return (
                 <button
                   type="button"
                   onClick={() => removeItem(index)}
-                  className="text-red-600 hover:text-red-800"
+                  className="inline-flex items-center gap-2 px-2 py-2 text-sm font-medium text-white transition rounded-lg bg-red-500 shadow-theme-xs hover:bg-red-600"
                 >
-                  🗑️
+                  <Trash2 size={16} />
                 </button>
               )}
             </div>
@@ -370,6 +375,7 @@ return (
             setFormData({ ...formData, paidAmount: parseFloat(e.target.value) || 0 })
           }
           className="w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+          placeholder="أدخل المبلغ المدفوع"
         />
       </div>
 
@@ -380,6 +386,7 @@ return (
           value={formData.remainingAmount}
           readOnly
           className="w-full px-2 py-1 border bg-gray-100 rounded-md text-gray-600"
+          placeholder="المبلغ المتبقي"
         />
       </div>
     </div>
@@ -399,7 +406,7 @@ return (
         onChange={handleChange}
         rows={2}
         className="w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-        placeholder="ملاحظات إضافية"
+        placeholder="أدخل ملاحظات إضافية"
       />
     </div>
 
@@ -408,14 +415,16 @@ return (
       <button
         type="button"
         onClick={onCancel}
-        className="px-4 py-1 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+        className="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-700 transition rounded-lg bg-gray-200 shadow-theme-xs hover:bg-gray-300"
       >
+        <X size={16} />
         إلغاء
       </button>
       <button
         type="submit"
-        className="px-4 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+        className="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600"
       >
+        <Save size={16} />
         حفظ
       </button>
     </div>

@@ -794,6 +794,7 @@ body {
   background-color: #f8fafc;
 }
 
+/*
 .btn-primary {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   transition: all 0.3s ease;
@@ -823,6 +824,7 @@ body {
   transform: translateY(-2px);
   box-shadow: 0 10px 20px rgba(79, 172, 254, 0.4);
 }
+*/
 
 .sidebar-gradient {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

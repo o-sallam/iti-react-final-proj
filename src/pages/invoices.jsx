@@ -14,9 +14,7 @@ const Invoices = () => {
   const [page, setPage] = useState(1);
 const [limit] = useState(10);
 const [totalPages, setTotalPages] = useState(1);
-const [selectedInvoice, setSelectedInvoice] = useState(null);
 
-const [showModal, setShowModal] = useState(false);
  /* useEffect(() => {
     loadInvoices();
   }, []);*/
@@ -130,7 +128,7 @@ useEffect(() => {
           </div>
           <button
             onClick={handleAddInvoice}
-            className="btn-primary text-white px-6 py-3 rounded-lg font-medium flex items-center space-x-2 hover:transform hover:scale-105 transition-all duration-200"
+            className="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600"
           >
             <Plus size={20} className="ml-2" />
             <span>إنشاء فاتورة جديدة</span>
@@ -140,8 +138,8 @@ useEffect(() => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <div className="flex items-center justify-between">
+        <div className="rounded-2xl border border-gray-200 bg-white p-6">
+          <div className="flex items-start justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">إجمالي الفواتير</p>
               <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
@@ -151,21 +149,19 @@ useEffect(() => {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <div className="flex items-center justify-between">
+        <div className="rounded-2xl border border-gray-200 bg-white p-6">
+          <div className="flex items-start justify-between">
             <div>
-<p className="text-sm font-medium text-gray-600">الفواتير المدفوعة</p>
-<p className="text-2xl font-bold text-green-600">
-  {stats.paid}
-</p>
+              <p className="text-sm font-medium text-gray-600">الفواتير المدفوعة</p>
+              <p className="text-2xl font-bold text-green-600">{stats.paid}</p>
             </div>
             <div className="bg-green-100 rounded-lg p-3">
               <DollarSign className="h-6 w-6 text-green-600" />
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <div className="flex items-center justify-between">
+        <div className="rounded-2xl border border-gray-200 bg-white p-6">
+          <div className="flex items-start justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">الفواتير المعلقة</p>
               <p className="text-2xl font-bold text-yellow-600">{stats.pending}</p>
@@ -175,8 +171,8 @@ useEffect(() => {
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <div className="flex items-center justify-between">
+        <div className="rounded-2xl border border-gray-200 bg-white p-6">
+          <div className="flex items-start justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">الفواتير المتأخرة</p>
               <p className="text-2xl font-bold text-red-600">{stats.overdue}</p>
@@ -196,7 +192,7 @@ useEffect(() => {
             <input
               type="text"
               placeholder="البحث برقم الفاتورة أو اسم المورد..."
-              className="w-full pl-4 pr-10 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent input-focus"
+              className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -204,7 +200,7 @@ useEffect(() => {
           <div className="flex items-center space-x-4">
             <Filter className="text-gray-400" size={20} />
             <select
-              className="px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="h-11 rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10"
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
             >
@@ -224,98 +220,87 @@ useEffect(() => {
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
         </div>
       ) : (
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-4 text-right text-sm font-medium text-gray-900">رقم الفاتورة</th>
-                  <th className="px-6 py-4 text-right text-sm font-medium text-gray-900">المورد</th>
-                  <th className="px-6 py-4 text-right text-sm font-medium text-gray-900">التاريخ</th>
-                  <th className="px-6 py-4 text-right text-sm font-medium text-gray-900">المبلغ</th>
-                  <th className="px-6 py-4 text-right text-sm font-medium text-gray-900">الحالة</th>
-                  <th className="px-6 py-4 text-right text-sm font-medium text-gray-900">الإجراءات</th>
+        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+          <div className="max-w-full overflow-x-auto">
+            <table className="min-w-full">
+              <thead>
+                <tr className="border-b border-gray-100">
+                  <th className="px-5 py-3 sm:px-6 text-right text-sm font-medium text-gray-900">رقم الفاتورة</th>
+                  <th className="px-5 py-3 sm:px-6 text-right text-sm font-medium text-gray-900">المورد</th>
+                  <th className="px-5 py-3 sm:px-6 text-right text-sm font-medium text-gray-900">التاريخ</th>
+                  <th className="px-5 py-3 sm:px-6 text-right text-sm font-medium text-gray-900">المبلغ</th>
+                  <th className="px-5 py-3 sm:px-6 text-right text-sm font-medium text-gray-900">الحالة</th>
+                  <th className="px-5 py-3 sm:px-6 text-right text-sm font-medium text-gray-900">الإجراءات</th>
                 </tr>
               </thead>
-<tbody className="divide-y divide-gray-200">
-  {(invoices || []).map((invoice) => (
-    
-    <tr key={invoice.id} className="table-row-hover">
-      <td className="px-6 py-4">
-        <div className="text-sm font-medium text-gray-900">{invoice.invoiceNumber}</div>
-      </td>
-      <td className="px-6 py-4">
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-            <User className="h-4 w-4 text-white" />
-          </div>
-          <div>
-            <div className="text-sm font-medium text-gray-900">{invoice.supplier?.name}</div>
-            <div className="text-sm text-gray-500">{invoice.supplier?.email}</div>
-          </div>
-        </div>
-      </td>
-      <td className="px-6 py-4">
-        <div className="flex items-center space-x-2">
-          <Calendar className="h-4 w-4 text-gray-400" />
-          <span className="text-sm text-gray-900">{invoice.orderDate?.slice(0, 10)}</span>
-        </div>
-      </td>
-      <td className="px-6 py-4">
-        <div className="flex items-center space-x-2">
-          <DollarSign className="h-4 w-4 text-gray-400" />
-          <span className="text-sm font-medium text-gray-900">{invoice.totalAmount}</span>
-        </div>
-      </td>
-      <td className="px-6 py-4">
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(invoice.status)}`}>
-          {getStatusText(invoice.status)}
-        </span>
-      </td>
-      <td className="px-6 py-4">
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={() => handleEditInvoice(invoice)}
-            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-            title="تعديل"
-          >
-            <Edit size={16} />
-          </button>
-          <button
-        className="p-2 text-green-600 hover:bg-green-50 rounded-lg"
-        title="عرض"
-        onClick={() =>{
-    setSelectedInvoice(invoice); setShowModal(true)}}
-      >
-        <Eye size={16} />
-      </button>
-
-      {/* مودال العرض */}
-      {showModal && (
-        <InvoiceViewModal invoice={selectedInvoice} onClose={() => setShowModal(false)}   getStatusText={getStatusText}
- />
-      )}
-          <button
-            className="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
-            title="تحميل"
-          >
-            <Download size={16} />
-          </button>
-
-
-          <button
-            onClick={() => handleDeleteInvoice(invoice.id)}
-            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-            title="حذف"
-          >
-            <Trash2 size={16} />
-          </button>
-        </div>
-      </td>
-    </tr>
-  ))}
-</tbody>
-
+              <tbody className="divide-y divide-gray-100">
+                {(invoices || []).map((invoice) => (
+                  <tr key={invoice.id} className="hover:bg-gray-50">
+                    <td className="px-5 py-4 sm:px-6">
+                      <div className="text-sm font-medium text-gray-900">{invoice.invoiceNumber}</div>
+                    </td>
+                    <td className="px-5 py-4 sm:px-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                          <User className="h-4 w-4 text-white" />
+                        </div>
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">{invoice.supplier?.name}</div>
+                          <div className="text-sm text-gray-500">{invoice.supplier?.email}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-5 py-4 sm:px-6">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4 text-gray-400" />
+                        <span className="text-sm text-gray-900">{invoice.orderDate?.slice(0, 10)}</span>
+                      </div>
+                    </td>
+                    <td className="px-5 py-4 sm:px-6">
+                      <div className="flex items-center gap-2">
+                        <DollarSign className="h-4 w-4 text-gray-400" />
+                        <span className="text-sm font-medium text-gray-900">{invoice.totalAmount}</span>
+                      </div>
+                    </td>
+                    <td className="px-5 py-4 sm:px-6">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(invoice.status)}`}>
+                        {getStatusText(invoice.status)}
+                      </span>
+                    </td>
+                    <td className="px-5 py-4 sm:px-6">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleEditInvoice(invoice)}
+                          className="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600"
+                          title="تعديل"
+                        >
+                          <Edit size={16} />
+                        </button>
+                        <button
+                          className="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-green-500 shadow-theme-xs hover:bg-green-600"
+                          title="عرض"
+                          onClick={() => {}}
+                        >
+                          <Eye size={16} />
+                        </button>
+                        <button
+                          className="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-purple-500 shadow-theme-xs hover:bg-purple-600"
+                          title="تحميل"
+                        >
+                          <Download size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteInvoice(invoice.id)}
+                          className="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-red-500 shadow-theme-xs hover:bg-red-600"
+                          title="حذف"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
             </table>
           </div>
         </div>
@@ -331,7 +316,7 @@ useEffect(() => {
           <p className="text-gray-600 mb-4">ابدأ بإنشاء فاتورة جديدة</p>
           <button
             onClick={handleAddInvoice}
-            className="btn-primary text-white px-6 py-3 rounded-lg font-medium"
+            className="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600"
           >
             إنشاء فاتورة جديدة
           </button>

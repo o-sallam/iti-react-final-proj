@@ -1,0 +1,12 @@
+@import '../المحيطtemplate/src/css/style.css';
+@font-face {
+  font-family: 'Tajawal';
+  src: url('./assets/fonts/Tajawal-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+body, html, * {
+  font-family: 'Tajawal', Arial, Helvetica, sans-serif !important;
+}

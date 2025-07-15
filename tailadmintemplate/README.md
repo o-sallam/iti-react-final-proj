@@ -1,13 +1,13 @@
-# TailAdmin - Free Tailwind Admin Dashboard Template
+# المحيط - Free Tailwind Admin Dashboard Template
 
-TailAdmin is a high-quality, open-source, and **free Tailwind CSS admin template** that is perfect for creating data-rich backends,
+المحيط is a high-quality, open-source, and **free Tailwind CSS admin template** that is perfect for creating data-rich backends,
 powerful web applications and dashboard-admin projects.
 
-![TailAdmin Dashboard Preview](./banner.png)
+![المحيط Dashboard Preview](./banner.png)
 
 ## Overview
 
-TailAdmin provides essential UI components and layouts for building feature-rich, data-driven admin dashboards and control panels. It's built using:
+المحيط provides essential UI components and layouts for building feature-rich, data-driven admin dashboards and control panels. It's built using:
 
 - HTML
 - Alpine.js
@@ -16,28 +16,28 @@ TailAdmin provides essential UI components and layouts for building feature-rich
 
 ### Quick Links
 
-- [✨ Visit Website](https://tailadmin.com)
-- [📄 Documentation](https://tailadmin.com/docs)
-- [⬇️ Download](https://tailadmin.com/download)
+- [✨ Visit Website](https://المحيط.com)
+- [📄 Documentation](https://المحيط.com/docs)
+- [⬇️ Download](https://المحيط.com/download)
 - [🖌️ Figma Design File (Community Edition)](https://www.figma.com/community/file/1463141366275764364)
-- [⚡ Get PRO Version](https://tailadmin.com/pricing)
+- [⚡ Get PRO Version](https://المحيط.com/pricing)
 
 ### Demos
 
-- [Free Version](https://free-demo.tailadmin.com/)
-- [Pro Version](https://demo.tailadmin.com)
+- [Free Version](https://free-demo.المحيط.com/)
+- [Pro Version](https://demo.المحيط.com)
 
 ### Other Versions
 
-- [Next.js Version](https://github.com/TailAdmin/free-nextjs-admin-dashboard)
-- [React.js Version](https://github.com/TailAdmin/free-react-tailwind-admin-dashboard)
-- [Vue.js Version](https://github.com/TailAdmin/vue-tailwind-admin-dashboard)
+- [Next.js Version](https://github.com/المحيط/free-nextjs-admin-dashboard)
+- [React.js Version](https://github.com/المحيط/free-react-tailwind-admin-dashboard)
+- [Vue.js Version](https://github.com/المحيط/vue-tailwind-admin-dashboard)
 
 ## Installation
 
 ### Prerequisites
 
-To get started with TailAdmin, ensure you have the following prerequisites installed and set up:
+To get started with المحيط, ensure you have the following prerequisites installed and set up:
 
 - Node.js 18.x or later
 
@@ -46,7 +46,7 @@ To get started with TailAdmin, ensure you have the following prerequisites insta
 Clone the repository using the following command:
 
 ```bash
-git clone https://github.com/TailAdmin/tailadmin-free-tailwind-dashboard-template.git
+git clone https://github.com/المحيط/المحيط-free-tailwind-dashboard-template.git
 ```
 
 > Windows Users: place the repository near the root of your drive if you face issues while cloning.
@@ -68,7 +68,7 @@ git clone https://github.com/TailAdmin/tailadmin-free-tailwind-dashboard-templat
 
 ## Components
 
-TailAdmin is a pre-designed starting point for building a web-based dashboard using HTML, Alpine.js and Tailwind CSS. The template includes:
+المحيط is a pre-designed starting point for building a web-based dashboard using HTML, Alpine.js and Tailwind CSS. The template includes:
 
 - Sophisticated and accessible sidebar
 - Data visualization components
@@ -95,7 +95,7 @@ TailAdmin is a pre-designed starting point for building a web-based dashboard us
 - Complete Figma design file
 - Email support
 
-To learn more about pro version features and pricing, visit our [pricing page](https://tailadmin.com/pricing).
+To learn more about pro version features and pricing, visit our [pricing page](https://المحيط.com/pricing).
 
 ## Update Logs
 
@@ -143,11 +143,11 @@ Major update with comprehensive redesign and new features.
 
 #### Previous Versions
 
-For detailed changelogs of previous versions (1.0.0 - 1.3.0), visit our [documentation](https://tailadmin.com/docs/update-logs/).
+For detailed changelogs of previous versions (1.0.0 - 1.3.0), visit our [documentation](https://المحيط.com/docs/update-logs/).
 
 ## License
 
-The community edition of TailAdmin is released under the MIT License.
+The community edition of المحيط is released under the MIT License.
 
 ## Support
 

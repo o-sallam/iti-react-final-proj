@@ -7,7 +7,7 @@ const SideBar = ({ sidebarToggle }) => {
   const menuItems = [
     {
       id: 'Dashboard',
-      title: 'Dashboard',
+      title: 'لوحة التحكم',
       icon: (
         <svg
           width="24"
@@ -29,7 +29,7 @@ const SideBar = ({ sidebarToggle }) => {
     },
     {
       id: 'Invoices',
-      title: 'Invoices',
+      title: 'الفواتير',
       icon: (
         <svg
           width="24"
@@ -51,7 +51,7 @@ const SideBar = ({ sidebarToggle }) => {
     },
     {
       id: 'PurchaseOrders',
-      title: 'Purchase Orders',
+      title: 'أوامر الشراء',
       icon: (
         <svg
           width="24"
@@ -73,7 +73,7 @@ const SideBar = ({ sidebarToggle }) => {
     },
     {
       id: 'Suppliers',
-      title: 'Suppliers',
+      title: 'الموردون',
       icon: (
         <svg
           width="24"
@@ -142,7 +142,7 @@ const SideBar = ({ sidebarToggle }) => {
               <span
                 className={`menu-group-title ${sidebarToggle ? 'lg:hidden' : ''}`}
               >
-                MENU
+                القائمة
               </span>
 
               <svg
