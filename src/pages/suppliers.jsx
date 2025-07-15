@@ -88,7 +88,7 @@ const Suppliers = () => {
           </div>
           <button
             onClick={handleAddSupplier}
-            className="btn-primary text-white px-6 py-3 rounded-lg font-medium flex items-center space-x-2 hover:transform hover:scale-105 transition-all duration-200"
+            className="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600"
           >
             <Plus size={20} className="ml-2" />
             <span>إضافة مورد جديد</span>

@@ -73,7 +73,7 @@ const SideBar = ({ sidebarToggle }) => {
     },
     {
       id: 'Suppliers',
-      title: 'الموردون',
+      title: 'الموردين',
       icon: (
         <svg
           width="24"

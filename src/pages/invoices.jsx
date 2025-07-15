@@ -188,7 +188,7 @@ useEffect(() => {
       <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1 relative">
-            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
             <input
               type="text"
               placeholder="البحث برقم الفاتورة أو اسم المورد..."
