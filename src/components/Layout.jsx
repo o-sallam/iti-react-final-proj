@@ -11,7 +11,7 @@ const Layout = ({ children }) => {
       <SideBar sidebarToggle={sidebarToggle} />
       
       {/* Main Content */}
-      <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+      <div className="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden bg-gray-50 dark:bg-[#0f1827]">
         {/* Navbar */}
         <NavBar sidebarToggle={sidebarToggle} setSidebarToggle={setSidebarToggle} />
         
