@@ -243,13 +243,13 @@ const NavBar = ({ sidebarToggle, setSidebarToggle }) => {
                     <li>
                       <a className="flex gap-3 rounded-lg border-b border-gray-100 p-3 px-4.5 py-3 hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-white/5" href="#">
                         <span className="relative z-1 block h-10 w-full max-w-10 rounded-full">
-                          <img src="/images/user/user-02.jpg" alt="User" className="overflow-hidden rounded-full" />
+                          <img src="/images/user/user-01.jpg" alt="User" className="overflow-hidden rounded-full" />
                           <span className="bg-green-500 absolute right-0 bottom-0 z-10 h-2.5 w-full max-w-2.5 rounded-full border-[1.5px] border-white dark:border-gray-900"></span>
                         </span>
                         <span className="block">
                           <span className="text-theme-sm mb-1.5 block text-gray-500 dark:text-gray-400">
-                            <span className="font-medium text-gray-800 dark:text-white/90">طارق محمد</span>
-                            طلب إذن لتعديل <span className="font-medium text-gray-800 dark:text-white/90">مشروع - تطبيق الفواتير</span>
+                            <span className="font-medium text-gray-800 ml-1 dark:text-white/90">طارق محمد</span>
+                            طلب إذن لتعديل <span className="font-medium text-gray-800 ml-1 dark:text-white/90">مشروع - تطبيق الفواتير</span>
                           </span>
                           <span className="text-theme-xs flex items-center gap-2 text-gray-500 dark:text-gray-400">
                             <span>مشروع</span>
@@ -263,13 +263,13 @@ const NavBar = ({ sidebarToggle, setSidebarToggle }) => {
                     <li>
                       <a className="flex gap-3 rounded-lg border-b border-gray-100 p-3 px-4.5 py-3 hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-white/5" href="#">
                         <span className="relative z-1 block h-10 w-full max-w-10 rounded-full">
-                          <img src="/images/user/user-03.jpg" alt="User" className="overflow-hidden rounded-full" />
+                          <img src="/images/user/user-01.jpg" alt="User" className="overflow-hidden rounded-full" />
                           <span className="bg-green-500 absolute right-0 bottom-0 z-10 h-2.5 w-full max-w-2.5 rounded-full border-[1.5px] border-white dark:border-gray-900"></span>
                         </span>
                         <span className="block">
                           <span className="text-theme-sm mb-1.5 block text-gray-500 dark:text-gray-400">
-                            <span className="font-medium text-gray-800 dark:text-white/90">سارة علي</span>
-                            طلب إذن لتعديل <span className="font-medium text-gray-800 dark:text-white/90">مشروع - تطبيق الفواتير</span>
+                            <span className="font-medium text-gray-800 ml-1 dark:text-white/90">سارة علي</span>
+                            طلب إذن لتعديل <span className="font-medium text-gray-800 ml-1 dark:text-white/90">مشروع - تطبيق الفواتير</span>
                           </span>
                           <span className="text-theme-xs flex items-center gap-2 text-gray-500 dark:text-gray-400">
                             <span>مشروع</span>
@@ -283,13 +283,32 @@ const NavBar = ({ sidebarToggle, setSidebarToggle }) => {
                     <li>
                       <a className="flex gap-3 rounded-lg border-b border-gray-100 p-3 px-4.5 py-3 hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-white/5" href="#">
                         <span className="relative z-1 block h-10 w-full max-w-10 rounded-full">
-                          <img src="/images/user/user-04.jpg" alt="User" className="overflow-hidden rounded-full" />
+                          <img src="/images/user/user-01.jpg" alt="User" className="overflow-hidden rounded-full" />
                           <span className="bg-green-500 absolute right-0 bottom-0 z-10 h-2.5 w-full max-w-2.5 rounded-full border-[1.5px] border-white dark:border-gray-900"></span>
                         </span>
                         <span className="block">
                           <span className="text-theme-sm mb-1.5 block text-gray-500 dark:text-gray-400">
-                            <span className="font-medium text-gray-800 dark:text-white/90">أحمد حسن</span>
-                            طلب إذن لتعديل <span className="font-medium text-gray-800 dark:text-white/90">مشروع - تطبيق الفواتير</span>
+                            <span className="font-medium text-gray-800 ml-1 dark:text-white/90">أحمد حسن</span>
+                            طلب إذن لتعديل <span className="font-medium text-gray-800 ml-1 dark:text-white/90">مشروع - تطبيق الفواتير</span>
+                          </span>
+                          <span className="text-theme-xs flex items-center gap-2 text-gray-500 dark:text-gray-400">
+                            <span>مشروع</span>
+                            <span className="h-1 w-1 rounded-full bg-gray-400"></span>
+                            <span>قبل 15 دقيقة</span>
+                          </span>
+                        </span>
+                      </a>
+                    </li>
+                    <li>
+                      <a className="flex gap-3 rounded-lg border-b border-gray-100 p-3 px-4.5 py-3 hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-white/5" href="#">
+                        <span className="relative z-1 block h-10 w-full max-w-10 rounded-full">
+                          <img src="/images/user/user-01.jpg" alt="User" className="overflow-hidden rounded-full" />
+                          <span className="bg-green-500 absolute right-0 bottom-0 z-10 h-2.5 w-full max-w-2.5 rounded-full border-[1.5px] border-white dark:border-gray-900"></span>
+                        </span>
+                        <span className="block">
+                          <span className="text-theme-sm mb-1.5 block text-gray-500 dark:text-gray-400">
+                            <span className="font-medium text-gray-800 ml-1 dark:text-white/90">أحمد حسن</span>
+                            طلب إذن لتعديل <span className="font-medium text-gray-800 ml-1 dark:text-white/90">مشروع - تطبيق الفواتير</span>
                           </span>
                           <span className="text-theme-xs flex items-center gap-2 text-gray-500 dark:text-gray-400">
                             <span>مشروع</span>
