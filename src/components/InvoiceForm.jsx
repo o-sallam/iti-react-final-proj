@@ -290,9 +290,9 @@ return (
         <button
           type="button"
           onClick={addItem}
-          className="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-green-500 shadow-theme-xs hover:bg-green-600"
+          className="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-white transition rounded-lg bg-green-500 shadow-theme-xs hover:bg-green-600"
         >
-          <Plus size={16} className="mr-1" />
+          <Plus size={16} className="" />
           إضافة بند
         </button>
       </div>
@@ -415,16 +415,16 @@ return (
       <button
         type="button"
         onClick={onCancel}
-        className="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-700 transition rounded-lg bg-gray-200 shadow-theme-xs hover:bg-gray-300"
+        className="inline-flex items-center gap-2 px-1 py-1 text-sm font-medium text-gray-700 transition rounded-lg bg-gray-200 shadow-theme-xs hover:bg-gray-300"
       >
-        <X size={16} />
+        <X size={10} />
         إلغاء
       </button>
       <button
         type="submit"
-        className="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600"
+        className="inline-flex items-center gap-2 px-1 py-1 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600"
       >
-        <Save size={16} />
+        <Save size={10} />
         حفظ
       </button>
     </div>
