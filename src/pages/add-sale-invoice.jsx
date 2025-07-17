@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Trash2, List, Calculator, Plus } from 'lucide-react';
+import clientService from '../services/clientService';
 
 const DUMMY_PRODUCTS = [
   { id: 13, name: 'مفروم [20] 700', price: 165 },
@@ -20,9 +21,10 @@ const initialItems = [
 ];
 
 const AddSaleInvoice = () => {
-  const location = useLocation();
+  const { clientId } = useParams();
   const navigate = useNavigate();
-  const client = location.state?.client;
+  const [client, setClient] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const previous = 15990;
   const branch = 'المخزن الرئيسي';
@@ -34,6 +36,26 @@ const AddSaleInvoice = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
+
+  // Fetch client data when component mounts
+  useEffect(() => {
+    const fetchClient = async () => {
+      try {
+        setLoading(true);
+        const clientData = await clientService.getById(clientId);
+        setClient(clientData);
+      } catch (error) {
+        console.error('Error fetching client:', error);
+        // Handle error - could redirect to clients page or show error message
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (clientId) {
+      fetchClient();
+    }
+  }, [clientId]);
 
   const total = items.reduce((sum, item) => sum + (Number(item.value) || 0), 0);
   const remaining = total + previous - (Number(paid) || 0);
@@ -96,15 +118,23 @@ const AddSaleInvoice = () => {
     setSelectedProduct(null);
   };
 
+  if (loading) {
+    return (
+      <div className="p-8 text-center">
+        <p className="text-gray-600">جاري تحميل بيانات العميل...</p>
+      </div>
+    );
+  }
+
   if (!client) {
     return (
       <div className="p-8 text-center">
         <p className="text-red-600">لا يوجد بيانات عميل. الرجاء العودة واختيار عميل.</p>
         <button
           className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
-          onClick={() => navigate(-1)}
+          onClick={() => navigate('/clients')}
         >
-          <ArrowLeft className="inline mr-2" /> عودة
+          <ArrowLeft className="inline mr-2" /> عودة للعملاء
         </button>
       </div>
     );

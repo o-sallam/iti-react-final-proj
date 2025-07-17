@@ -58,7 +58,7 @@ const Client = () => {
   };
 
   const handleAddInvoice = (client) => {
-    navigate('/add-sale-invoice', { state: { client } });
+    navigate(`/add-sale-invoice/${client.id}`);
   };
 
   return (
