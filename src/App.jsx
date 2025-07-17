@@ -12,10 +12,16 @@ import WarehouseForm from './pages/warehouses/warehouseForm';
 import  InventoryList from './pages/inventory';
 
 
+import Login from './pages/Login';
+import Register from './pages/Register';
 
 function App() {
   return (
     <Router>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+      </Routes>
       <Layout>
         <Routes>
           <Route path="/suppliers" element={<Suppliers />} />
