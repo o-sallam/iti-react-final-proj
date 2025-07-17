@@ -10,7 +10,7 @@ const SideBar = ({ sidebarToggle }) => {
       title: 'العملاء',
       icon: (
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2L2 22h20L12 2Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 2L2 22h20L12 2Z" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       ),
       link: '/clients',
@@ -21,7 +21,7 @@ const SideBar = ({ sidebarToggle }) => {
       title: 'المبيعات',
       icon: (
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2L2 22h20L12 2Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 2L2 22h20L12 2Z" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       ),
       link: '/selling',
@@ -226,7 +226,7 @@ const SideBar = ({ sidebarToggle }) => {
                 </g>
               </svg>
               {/* Word behind the logo */}
-              <span class="text-gray-600 pr-4 text-3xl font-bold">
+              <span className="text-gray-600 pr-4 text-3xl font-bold">
                 المحيط
               </span>
             </span>

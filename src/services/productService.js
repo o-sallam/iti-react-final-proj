@@ -1,11 +1,9 @@
-import axios from 'axios';
-
-const API_BASE_URL = 'http://localhost:3000';
+import api from '../api';
 
 const productService = {
   getAllProducts: async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/products`);
+      const response = await api.get('/products');
       return response.data;
     } catch {
       throw new Error('Failed to fetch products');
@@ -14,7 +12,7 @@ const productService = {
 
   getProductById: async (id) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/products/${id}`);
+      const response = await api.get(`/products/${id}`);
       return response.data;
     } catch {
       throw new Error('Failed to fetch product');
@@ -24,7 +22,7 @@ const productService = {
   // Create new product
   createProduct: async (productData) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/products`, productData);
+      const response = await api.post('/products', productData);
       return response.data;
     } catch {
       throw new Error('Failed to create product');
@@ -33,7 +31,7 @@ const productService = {
 
   updateProduct: async (id, productData) => {
     try {
-      const response = await axios.put(`${API_BASE_URL}/products/${id}`, productData);
+      const response = await api.put(`/products/${id}`, productData);
       return response.data;
     } catch {
       throw new Error('Failed to update product');
@@ -42,7 +40,7 @@ const productService = {
 
   deleteProduct: async (id) => {
     try {
-      await axios.delete(`${API_BASE_URL}/products/${id}`);
+      await api.delete(`/products/${id}`);
       return true;
     } catch {
       throw new Error('Failed to delete product');
@@ -51,7 +49,7 @@ const productService = {
 
   searchProducts: async (query) => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/products/search?q=${query}`);
+      const response = await api.get(`/products/search?q=${query}`);
       return response.data;
     } catch {
       throw new Error('Failed to search products');
@@ -61,7 +59,7 @@ const productService = {
   // New method to fetch products with stock and warehouse info
   getProductsWithStockWarehouse: async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/products/with-stock-warehouse`);
+      const response = await api.get('/products/with-stock-warehouse');
       return response.data;
     } catch {
       throw new Error('فشل في جلب المنتجات مع المخزون والمخزن');

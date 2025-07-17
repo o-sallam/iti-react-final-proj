@@ -3,6 +3,7 @@ import { Plus, Edit, Trash2, Search, Filter, Eye, Calendar, User, DollarSign, Do
 import Modal from '../components/Modal';
 import InvoiceForm from '../components/InvoiceForm';
 import invoicesService from '../services/invoicesService';
+import api from '../api';
 import InvoiceViewModal from '../components/InvoiceViewModal';
 const Invoices = () => {
   const [invoices, setInvoices] = useState([]);
@@ -32,9 +33,8 @@ useEffect(() => {
 const [stats, setStats] = useState({ total: 0, paid: 0, pending: 0, overdue: 0 });
 
 useEffect(() => {
-  fetch('http://localhost:3000/purchase-orders/stats')
-    .then(res => res.json())
-    .then(setStats)
+  api.get('/purchase-orders/stats')
+    .then(res => setStats(res.data))
     .catch(console.error);
 }, []);
 
