@@ -85,10 +85,10 @@ const Selling = () => {
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {(invoices || []).map((invoice) => (
-                  <tr key={invoice.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                  <tr key={invoice.sale_invoice_id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td className="px-5 py-4 sm:px-6">
                       <div className="text-sm font-medium text-gray-900 dark:text-white">
-                        {invoice.id}
+                        {invoice.sale_invoice_id}
                       </div>
                     </td>
                     <td className="px-5 py-4 sm:px-6">
@@ -98,7 +98,7 @@ const Selling = () => {
                         </div>
                         <div>
                           <div className="text-sm font-medium text-gray-900 dark:text-white">
-                            {invoice.customerName}
+                            {invoice.client_name}
                           </div>
                         </div>
                       </div>
@@ -107,7 +107,7 @@ const Selling = () => {
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4 text-gray-400 dark:text-gray-300" />
                         <span className="text-sm text-gray-900 dark:text-white">
-                          {invoice.invoiceDate?.slice(0, 10)}
+                          {invoice.date?.slice(0, 10)}
                         </span>
                       </div>
                     </td>
@@ -115,7 +115,7 @@ const Selling = () => {
                       <div className="flex items-center gap-2">
                         <DollarSign className="h-4 w-4 text-gray-400 dark:text-gray-300" />
                         <span className="text-sm font-medium text-gray-900 dark:text-white">
-                          {invoice.totalAmount}
+                          {invoice.total_amount}
                         </span>
                       </div>
                     </td>

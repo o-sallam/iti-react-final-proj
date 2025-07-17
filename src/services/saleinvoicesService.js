@@ -4,8 +4,8 @@ const API_URL = '/saleinvoices';
 
 const saleinvoicesService = {
   getAll: async () => {
-    const res = await api.get(API_URL);
-    return res.data; // array of sale invoices
+    const res = await api.get(`${API_URL}/with-details`);
+    return res.data; // array of sale invoices with details
   },
 
   getById: async (id) => {
