@@ -185,6 +185,7 @@ const Client = () => {
                   <th className="px-5 py-3 sm:px-6 text-right text-sm font-medium text-gray-900 dark:text-white">البريد الإلكتروني</th>
                   <th className="px-5 py-3 sm:px-6 text-right text-sm font-medium text-gray-900 dark:text-white">رقم الهاتف</th>
                   <th className="px-5 py-3 sm:px-6 text-right text-sm font-medium text-gray-900 dark:text-white">العنوان</th>
+                  <th className="px-5 py-3 sm:px-6 text-right text-sm font-medium text-gray-900 dark:text-white">الرصيد</th>
                   <th className="px-5 py-3 sm:px-6 text-right text-sm font-medium text-gray-900 dark:text-white">تاريخ الإنشاء</th>
                   <th className="px-5 py-3 sm:px-6 text-right text-sm font-medium text-gray-900 dark:text-white">إجراء</th>
                 </tr>
@@ -222,6 +223,11 @@ const Client = () => {
                     <td className="px-5 py-4 sm:px-6">
                       <div className="text-sm text-gray-900 dark:text-white">
                         {client.address}
+                      </div>
+                    </td>
+                    <td className="px-5 py-4 sm:px-6">
+                      <div className="text-sm text-gray-900 dark:text-white">
+                        {typeof client.balance === 'number' ? client.balance.toFixed(2) : client.balance || '0.00'}
                       </div>
                     </td>
                     <td className="px-5 py-4 sm:px-6">

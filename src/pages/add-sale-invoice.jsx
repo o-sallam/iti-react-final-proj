@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Trash2, List, Calculator, Plus } from 'lucide-react';
+import { ArrowLeft, Trash2, List, Calculator, Plus, Check } from 'lucide-react';
 import clientService from '../services/clientService';
+import { createPortal } from 'react-dom';
 
 const DUMMY_PRODUCTS = [
   { id: 13, name: 'مفروم [20] 700', price: 165 },
@@ -26,16 +27,48 @@ const AddSaleInvoice = () => {
   const [client, setClient] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const previous = 15990;
+  const previous = typeof client?.balance === 'number' ? client.balance : 0;
   const branch = 'المخزن الرئيسي';
 
   const [items, setItems] = useState(initialItems);
   const [paid, setPaid] = useState('');
   const [showSummary, setShowSummary] = useState(true);
-  const [addingRow, setAddingRow] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [inputProduct, setInputProduct] = useState(null); // selected product for input row
+  const [inputSearch, setInputSearch] = useState('');
+  const [inputQuantity, setInputQuantity] = useState(1);
+  const [inputSearchResults, setInputSearchResults] = useState([]);
+  const inputRef = React.useRef();
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
+  const dropdownRef = React.useRef();
+
+  // Position dropdown when inputSearchResults changes
+  useEffect(() => {
+    if (inputSearchResults.length > 0 && inputRef.current) {
+      const rect = inputRef.current.getBoundingClientRect();
+      setDropdownPos({
+        top: rect.bottom + window.scrollY,
+        left: rect.left + window.scrollX,
+        width: rect.width,
+      });
+    }
+  }, [inputSearchResults]);
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    if (inputSearchResults.length === 0) return;
+    function handleClick(e) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target) &&
+        inputRef.current &&
+        !inputRef.current.contains(e.target)
+      ) {
+        setInputSearchResults([]);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [inputSearchResults]);
 
   // Fetch client data when component mounts
   useEffect(() => {
@@ -78,44 +111,50 @@ const AddSaleInvoice = () => {
     console.log(invoiceData);
   };
 
-  // Add new row logic
-  const handleAddRow = () => {
-    setAddingRow(true);
-    setSearchTerm('');
-    setSearchResults([]);
-    setSelectedProduct(null);
-  };
-
-  const handleSearchChange = (e) => {
+  // Product search for input row
+  const handleInputSearchChange = (e) => {
     const value = e.target.value;
-    setSearchTerm(value);
+    setInputSearch(value);
+    setInputProduct(null);
     if (value.trim() === '') {
-      setSearchResults([]);
+      setInputSearchResults([]);
       return;
     }
-    // Improved dummy search: case-insensitive, trims whitespace
     const results = DUMMY_PRODUCTS.filter((p) =>
       p.name.toLowerCase().includes(value.trim().toLowerCase()) ||
       String(p.id).includes(value.trim())
     );
-    setSearchResults(results);
+    setInputSearchResults(results);
   };
 
-  const handleSelectProduct = (product) => {
+  const handleInputSelectProduct = (product) => {
+    setInputProduct(product);
+    setInputSearch(product.name);
+    setInputSearchResults([]);
+    setInputQuantity(1);
+  };
+
+  const handleInputQuantityChange = (e) => {
+    const val = parseInt(e.target.value, 10);
+    setInputQuantity(isNaN(val) || val < 1 ? 1 : val);
+  };
+
+  const handleApproveInputRow = () => {
+    if (!inputProduct) return;
     setItems((prev) => [
       ...prev,
       {
-        id: product.id,
-        name: product.name,
-        quantity: 1,
-        price: product.price,
-        value: product.price,
+        id: inputProduct.id,
+        name: inputProduct.name,
+        quantity: inputQuantity,
+        price: inputProduct.price,
+        value: inputProduct.price * inputQuantity,
       },
     ]);
-    setAddingRow(false);
-    setSearchTerm('');
-    setSearchResults([]);
-    setSelectedProduct(null);
+    setInputProduct(null);
+    setInputSearch('');
+    setInputQuantity(1);
+    setInputSearchResults([]);
   };
 
   if (loading) {
@@ -204,6 +243,7 @@ const AddSaleInvoice = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                  {/* Approved rows */}
                   {items.map((item, idx) => (
                     <tr key={item.id}>
                       <td className="px-3 py-2">{item.id}</td>
@@ -226,50 +266,77 @@ const AddSaleInvoice = () => {
                       </td>
                     </tr>
                   ))}
-                  {addingRow && (
-                    <tr>
-                      <td className="px-3 py-2">-</td>
-                      <td className="px-3 py-2 relative">
-                        <input
-                          type="text"
-                          className="w-full rounded border border-gray-300 px-2 py-1 text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-200"
-                          placeholder="ابحث عن منتج..."
-                          value={searchTerm}
-                          onChange={handleSearchChange}
-                          autoFocus
-                        />
-                        {searchResults.length > 0 && (
-                          <ul className="absolute z-50 left-0 right-0 bg-white border border-gray-200 rounded shadow mt-1 max-h-40 overflow-y-auto">
-                            {searchResults.map((product) => (
-                              <li
-                                key={product.id}
-                                className="px-3 py-2 cursor-pointer hover:bg-blue-100 text-right"
-                                onClick={() => handleSelectProduct(product)}
-                              >
-                                {product.name} - {product.price}
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                      </td>
-                      <td className="px-3 py-2">-</td>
-                      <td className="px-3 py-2">-</td>
-                      <td className="px-3 py-2">-</td>
-                      <td className="px-3 py-2"></td>
-                    </tr>
-                  )}
+                  {/* Input row */}
+                  <tr>
+                    <td className="px-3 py-2">{inputProduct ? inputProduct.id : '-'}</td>
+                    <td className="px-3 py-2 relative">
+                      <input
+                        ref={inputRef}
+                        type="text"
+                        className="w-full rounded border border-gray-300 px-2 py-1 text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-200"
+                        placeholder="ابحث عن منتج..."
+                        value={inputSearch}
+                        onChange={handleInputSearchChange}
+                        autoFocus
+                        readOnly={!!inputProduct}
+                      />
+                    </td>
+                    <td className="px-3 py-2">
+                      <input
+                        type="number"
+                        min="1"
+                        className="w-16 rounded border border-gray-300 px-2 py-1 text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-200"
+                        value={inputQuantity}
+                        onChange={handleInputQuantityChange}
+                        disabled={!inputProduct}
+                      />
+                    </td>
+                    <td className="px-3 py-2">
+                      <input
+                        type="text"
+                        className="w-20 rounded border border-gray-300 px-2 py-1 text-sm text-center bg-gray-100"
+                        value={inputProduct ? inputProduct.price : ''}
+                        readOnly
+                      />
+                    </td>
+                    <td className="px-3 py-2">{inputProduct ? (inputProduct.price * inputQuantity) : '-'}</td>
+                    <td className="px-3 py-2">
+                      <button
+                        className="bg-green-500 hover:bg-green-600 text-white rounded p-2"
+                        onClick={handleApproveInputRow}
+                        disabled={!inputProduct}
+                        title="اعتماد"
+                      >
+                        <Check size={18} />
+                      </button>
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
-            <div className="mt-4 flex justify-end">
-              <button
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 dark:bg-brand-400 dark:hover:bg-brand-500"
-                onClick={handleAddRow}
-                disabled={addingRow}
+            {/* Product search dropdown as portal */}
+            {inputSearchResults.length > 0 && createPortal(
+              <ul
+                ref={dropdownRef}
+                className="z-[9999] fixed bg-white border border-gray-200 rounded shadow max-h-60 overflow-y-auto w-[var(--dropdown-width)]"
+                style={{
+                  top: dropdownPos.top,
+                  left: dropdownPos.left,
+                  width: dropdownPos.width,
+                }}
               >
-                <Plus size={18} className="ml-2" /> إضافة صنف
-              </button>
-            </div>
+                {inputSearchResults.map((product) => (
+                  <li
+                    key={product.id}
+                    className="px-3 py-2 cursor-pointer hover:bg-blue-100 text-right"
+                    onClick={() => handleInputSelectProduct(product)}
+                  >
+                    {product.name} - {product.price}
+                  </li>
+                ))}
+              </ul>,
+              document.body
+            )}
           </div>
         </div>
       )}
