@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, User, Calendar, FilePlus2 } from 'lucide-react';
+import { Plus, Search, User, Calendar, FilePlus2, X } from 'lucide-react';
 import clientService from '../services/clientService';
 import { useNavigate } from 'react-router-dom';
 
 const Client = () => {
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [form, setForm] = useState({ name: '', email: '', phone: '', address: '' });
+  const [formLoading, setFormLoading] = useState(false);
+  const [formError, setFormError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,7 +29,32 @@ const Client = () => {
   };
 
   const handleAddClient = () => {
-    alert('إضافة عميل جديد (غير مفعلة بعد)');
+    setForm({ name: '', email: '', phone: '', address: '' });
+    setFormError('');
+    setIsModalOpen(true);
+  };
+
+  const handleFormChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    setFormError('');
+    if (!form.name || !form.email || !form.phone || !form.address) {
+      setFormError('جميع الحقول مطلوبة');
+      return;
+    }
+    setFormLoading(true);
+    try {
+      await clientService.create(form);
+      setIsModalOpen(false);
+      loadClients();
+    } catch (error) {
+      setFormError('حدث خطأ أثناء إضافة العميل');
+    } finally {
+      setFormLoading(false);
+    }
   };
 
   const handleAddInvoice = (client) => {
@@ -52,6 +81,75 @@ const Client = () => {
           </button>
         </div>
       </div>
+
+      {/* Modal for Add Client */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 w-full max-w-md relative">
+            <button
+              className="absolute top-3 left-3 text-gray-400 hover:text-gray-700 dark:hover:text-white"
+              onClick={() => setIsModalOpen(false)}
+            >
+              <X size={22} />
+            </button>
+            <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">إضافة عميل جديد</h2>
+            <form onSubmit={handleFormSubmit} className="space-y-4">
+              <div>
+                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">الاسم</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={form.name}
+                  onChange={handleFormChange}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 dark:bg-gray-900 dark:text-white"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">البريد الإلكتروني</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={form.email}
+                  onChange={handleFormChange}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 dark:bg-gray-900 dark:text-white"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">رقم الهاتف</label>
+                <input
+                  type="text"
+                  name="phone"
+                  value={form.phone}
+                  onChange={handleFormChange}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 dark:bg-gray-900 dark:text-white"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-200">العنوان</label>
+                <input
+                  type="text"
+                  name="address"
+                  value={form.address}
+                  onChange={handleFormChange}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 dark:bg-gray-900 dark:text-white"
+                  required
+                />
+              </div>
+              {formError && <div className="text-red-600 text-sm">{formError}</div>}
+              <button
+                type="submit"
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded-lg transition disabled:opacity-50"
+                disabled={formLoading}
+              >
+                {formLoading ? 'جاري الإضافة...' : 'إضافة'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Search (disabled, just UI) */}
       <div className="bg-white rounded-xl shadow-sm p-6 mb-6 dark:bg-gray-800 dark:border dark:border-gray-700">
