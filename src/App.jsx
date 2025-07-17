@@ -31,6 +31,7 @@ function App() {
                         <Route path="/products/new" element={<ProductForm />} />
                                     <Route path="/warehouses" element={<WarehouseList />} />
             <Route path="/warehouses/new" element={<WarehouseForm />} />
+            <Route path="/warehouses/edit/:id" element={<WarehouseForm />} />
                                     <Route path="/inventory" element={<InventoryList />} />
 
           <Route path="/" element={<div className="p-6"><h1 className="text-2xl font-bold mb-4">Dashboard</h1><p>Welcome to your dashboard!</p></div>} />

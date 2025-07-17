@@ -7,7 +7,7 @@ const warehouseService = {
     try {
       const response = await axios.get(`${API_BASE_URL}/warehouses`);
       return response.data;
-    } catch (error) {
+    } catch {
       throw new Error('Failed to fetch warehouses');
     }
   },
@@ -16,7 +16,7 @@ const warehouseService = {
     try {
       const response = await axios.get(`${API_BASE_URL}/warehouses/${id}`);
       return response.data;
-    } catch (error) {
+    } catch {
       throw new Error('Failed to fetch warehouse');
     }
   },
@@ -25,16 +25,16 @@ const warehouseService = {
     try {
       const response = await axios.post(`${API_BASE_URL}/warehouses`, warehouseData);
       return response.data;
-    } catch (error) {
+    } catch {
       throw new Error('Failed to create warehouse');
     }
   },
 
   updateWarehouse: async (id, warehouseData) => {
     try {
-      const response = await axios.put(`${API_BASE_URL}/warehouses/${id}`, warehouseData);
+      const response = await axios.patch(`${API_BASE_URL}/warehouses/${id}`, warehouseData);
       return response.data;
-    } catch (error) {
+    } catch {
       throw new Error('Failed to update warehouse');
     }
   },
@@ -43,7 +43,7 @@ const warehouseService = {
     try {
       await axios.delete(`${API_BASE_URL}/warehouses/${id}`);
       return true;
-    } catch (error) {
+    } catch {
       throw new Error('Failed to delete warehouse');
     }
   }
