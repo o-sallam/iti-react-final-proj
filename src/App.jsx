@@ -11,6 +11,8 @@ import ProductForm from './pages/products/productForm';
 import WarehouseList from './pages/warehouses/warehouses';
 import WarehouseForm from './pages/warehouses/warehouseForm';
 import  InventoryList from './pages/inventory';
+import Client from './pages/client';
+import AddSaleInvoice from './pages/add-sale-invoice';
 
 
 import Login from './pages/Login';
@@ -34,6 +36,8 @@ function App() {
             <Route path="/warehouses/new" element={<WarehouseForm />} />
             <Route path="/warehouses/edit/:id" element={<WarehouseForm />} />
                                     <Route path="/inventory" element={<InventoryList />} />
+                                    <Route path="/clients" element={<Client />} />
+                                    <Route path="/add-sale-invoice" element={<AddSaleInvoice />} />
 
           <Route path="/selling" element={<Selling />} />
           <Route path="/" element={<div className="p-6"><h1 className="text-2xl font-bold mb-4">Dashboard</h1><p>Welcome to your dashboard!</p></div>} />

@@ -1,11 +1,11 @@
 import api from '../api';
 
-const API_URL = '/saleinvoices';
+const API_URL = '/client';
 
-const saleinvoicesService = {
+const clientService = {
   getAll: async () => {
     const res = await api.get(API_URL);
-    return res.data; // array of sale invoices
+    return res.data; // array of clients
   },
 
   getById: async (id) => {
@@ -14,4 +14,4 @@ const saleinvoicesService = {
   },
 };
 
-export default saleinvoicesService; 
+export default clientService; 
