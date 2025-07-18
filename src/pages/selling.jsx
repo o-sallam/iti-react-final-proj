@@ -31,28 +31,9 @@ const Selling = () => {
 
   return (
     <div className="fade-in bg-gray-50 dark:bg-gray-900 min-h-screen">
-      {/* Page Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              إدارة فواتير المبيعات
-            </h1>
-            <p className="text-gray-600 dark:text-gray-300">إدارة جميع فواتير البيع</p>
-          </div>
-          <button
-            onClick={handleAddInvoice}
-            className="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 dark:bg-brand-400 dark:hover:bg-brand-500"
-          >
-            <Plus size={20} className="ml-2" />
-            <span>إضافة فاتورة بيع</span>
-          </button>
-        </div>
-      </div>
-
       {/* Search (disabled, just UI) */}
       <div className="bg-white rounded-xl shadow-sm p-6 mb-6 dark:bg-gray-800 dark:border dark:border-gray-700">
-        <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
           <div className="flex-1 relative">
             <Search
               className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-300"
@@ -65,6 +46,13 @@ const Selling = () => {
               disabled
             />
           </div>
+          <button
+            onClick={handleAddInvoice}
+            className="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 dark:bg-brand-400 dark:hover:bg-brand-500 mt-4 md:mt-0"
+          >
+            <Plus size={20} className="ml-2" />
+            <span>إضافة فاتورة بيع</span>
+          </button>
         </div>
       </div>
 

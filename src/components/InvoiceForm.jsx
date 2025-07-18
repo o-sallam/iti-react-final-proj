@@ -17,7 +17,7 @@ const InvoiceFormPage = () => {
     status: 'pending',
     paymentMethod: 'cash',
     notes: '',
-    items: [{ description: '', quantity: 1, unitPrice: 0, total: 0 }],
+    items: [{ description: '', quantity: 0, unitPrice: 0, total: 0 }],
     paidAmount: 0,
     remainingAmount: 0,
     warehouseId:'',
@@ -122,7 +122,7 @@ const loadInvoice = async (invoiceId) => {
   const addItem = () => {
     setFormData(prev => ({
       ...prev,
-      items: [...prev.items, { description: '', quantity: 1, unitPrice: 0, total: 0 }]
+      items: [...prev.items, { description: '', quantity: 0, unitPrice: 0, total: 0 }]
     }));
   };
 
@@ -215,7 +215,7 @@ const [searchTimeout, setSearchTimeout] = useState(null);
 
 const fetchProductSuggestions = async (query) => {
   try {
-    const response = await fetch(`/products?search=${query}`);
+    const response = await fetch(`http://localhost:3000/products?search=${query}`);
     const data = await response.json();
     setProductSuggestions(data);
   } catch (error) {
@@ -224,6 +224,7 @@ const fetchProductSuggestions = async (query) => {
 };
 
 const handleProductSearch = (index, query) => {
+  
   handleItemChange(index, 'description', query);
 
   // Debounce search
@@ -242,7 +243,7 @@ const handleSelectProduct = (index, product) => {
   updatedItems[index] = {
     ...updatedItems[index],
     description: product.name,
-    unitPrice: product.price,
+    unitPrice: product.purchase_price,
     productId: product.id,
   };
   setFormData({ ...formData, items: updatedItems });
@@ -533,7 +534,6 @@ const fetchWarehouses = async () => {
         placeholder="أدخل ملاحظات إضافية"
       />
     </div>
-        {/* باقي الفورم كما هو تمامًا */}
         {/* ... */}
         
         <div className="flex justify-end gap-2">

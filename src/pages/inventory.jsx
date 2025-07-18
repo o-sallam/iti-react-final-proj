@@ -16,9 +16,8 @@ const InventoryList = () => {
   useEffect(() => {
     if (searchQuery) {
       const filtered = inventory.filter(item =>
-        item.product?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.product?.sku.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.warehouse?.name.toLowerCase().includes(searchQuery.toLowerCase())
+        item.product_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.warehouse_name.toLowerCase().includes(searchQuery.toLowerCase())
       );
       setFilteredInventory(filtered);
     } else {
@@ -29,7 +28,7 @@ const InventoryList = () => {
   const fetchInventory = async () => {
     try {
       setLoading(true);
-      const data = await inventoryService.getAllInventory();
+      const data = await inventoryService.getProductsWithStockWarehouse();
       setInventory(data);
       setError(null);
     } catch (err) {
@@ -39,9 +38,11 @@ const InventoryList = () => {
     }
   };
 
-  const updateQuantity = async (id, newQuantity) => {
+  const updateQuantity = async (productId, newQuantity) => {
     try {
-      await inventoryService.updateQuantity(id, newQuantity);
+      // Note: This might need to be updated based on your API structure
+      // You may need to pass warehouse information or use a different endpoint
+      await inventoryService.updateQuantity(productId, newQuantity);
       fetchInventory();
     } catch (err) {
       setError(err.message);
@@ -93,9 +94,6 @@ const InventoryList = () => {
                   المنتج
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  رمز المنتج
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                   المخزن
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -111,23 +109,20 @@ const InventoryList = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredInventory.map((item) => (
-                <tr key={item.id} className="hover:bg-gray-50">
+                <tr key={`${item.product_id}-${item.warehouse_name}`} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <Package className="h-5 w-5 text-gray-400 ml-3" />
                       <div className="text-sm font-medium text-gray-900">
-                        {item.product?.name || 'منتج غير معروف'}
+                        {item.product_name || 'منتج غير معروف'}
                       </div>
                     </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {item.product?.sku || 'غير متوفر'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <Warehouse className="h-4 w-4 text-gray-400 ml-2" />
                       <div className="text-sm text-gray-900">
-                        {item.warehouse?.name || 'مخزن غير معروف'}
+                        {item.warehouse_name || 'مخزن غير معروف'}
                       </div>
                     </div>
                   </td>
@@ -135,7 +130,7 @@ const InventoryList = () => {
                     <input
                       type="number"
                       value={item.quantity}
-                      onChange={(e) => updateQuantity(item.id, parseInt(e.target.value))}
+                      onChange={(e) => updateQuantity(item.product_id, parseInt(e.target.value))}
                       className="w-20 px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       min="0"
                     />
@@ -153,7 +148,7 @@ const InventoryList = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button
-                      onClick={() => updateQuantity(item.id, item.quantity)}
+                      onClick={() => updateQuantity(item.product_id, item.quantity)}
                       className="text-blue-600 hover:text-blue-900 px-2 py-1 rounded hover:bg-blue-50 transition-colors"
                     >
                       تحديث

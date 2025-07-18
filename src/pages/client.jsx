@@ -50,7 +50,7 @@ const Client = () => {
       await clientService.create(form);
       setIsModalOpen(false);
       loadClients();
-    } catch (error) {
+    } catch{
       setFormError('حدث خطأ أثناء إضافة العميل');
     } finally {
       setFormLoading(false);

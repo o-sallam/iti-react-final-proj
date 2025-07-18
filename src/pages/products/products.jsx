@@ -107,11 +107,9 @@ const ProductList = () => {
                   رمز المنتج
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  السعر
-                </th>
+سعر البيع                </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  المخزون
-                </th>
+سعر الشراء                </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                   الحالة
                 </th>
@@ -133,10 +131,12 @@ const ProductList = () => {
                     {product.sku}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {product.price} م.ج
+                    {product.sale_price} ج.م
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
- {product.inventory?.quantity ?? '0'}                  </td>
+                    {product.purchase_price} ج.م
+                  </td>
+
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                       product.isActive 
