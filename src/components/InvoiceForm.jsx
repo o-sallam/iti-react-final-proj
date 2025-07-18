@@ -17,7 +17,7 @@ const InvoiceFormPage = () => {
     status: 'pending',
     paymentMethod: 'cash',
     notes: '',
-    items: [{ description: '', quantity: 1, unitPrice: 0, total: 0 }],
+    items: [{ description: '', quantity: 0, unitPrice: 0, total: 0 }],
     paidAmount: 0,
     remainingAmount: 0,
     warehouseId:'',
@@ -122,7 +122,7 @@ const loadInvoice = async (invoiceId) => {
   const addItem = () => {
     setFormData(prev => ({
       ...prev,
-      items: [...prev.items, { description: '', quantity: 1, unitPrice: 0, total: 0 }]
+      items: [...prev.items, { description: '', quantity: 0, unitPrice: 0, total: 0 }]
     }));
   };
 
@@ -390,9 +390,6 @@ const fetchWarehouses = async () => {
 
     </div>
 
-
-
-
     {/* البنود */}
     <div>
       <div className="flex items-center justify-between mb-2">
@@ -534,7 +531,6 @@ const fetchWarehouses = async () => {
         placeholder="أدخل ملاحظات إضافية"
       />
     </div>
-        {/* باقي الفورم كما هو تمامًا */}
         {/* ... */}
         
         <div className="flex justify-end gap-2">

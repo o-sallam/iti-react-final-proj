@@ -69,10 +69,12 @@ const ProductForm = () => {
       newErrors.sku = 'رمز المنتج مطلوب';
     }*/
 
-    if (!formData.price || parseFloat(formData.price) <= 0) {
-      newErrors.price = 'السعر يجب أن يكون أكبر من 0';
+    if (!formData.purchase_price || parseFloat(formData.purchase_price) <= 0) {
+      newErrors.purchase_price = 'السعر يجب أن يكون أكبر من 0';
     }
-
+ if (!formData.sale_price || parseFloat(formData.sale_price) <= 0) {
+      newErrors.sale_price = 'السعر يجب أن يكون أكبر من 0';
+    }
     if (!formData.stock || parseInt(formData.stock) < 0) {
       newErrors.stock = 'المخزون يجب أن يكون 0 أو أكثر';
     }
@@ -99,7 +101,9 @@ const ProductForm = () => {
       const productData = {
         name: formData.name,
         description: formData.description,
-        price: parseFloat(formData.price),
+        purchase_price: parseFloat(formData.purchase_price),
+                sale_price: parseFloat(formData.sale_price),
+
         sku: formData.sku,
         isActive: formData.isActive,
         stock: parseInt(formData.stock)
@@ -207,17 +211,35 @@ const ProductForm = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
               <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-2">
-                السعر *
+                سعر البيع*
               </label>
               <input
                 type="number"
-                id="price"
-                name="price"
-                value={formData.price}
+                id="sale_price"
+                name="sale_price"
+                value={formData.sale_price}
                 onChange={handleChange}
                 step="0.01"
                 className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors.price ? 'border-red-300' : 'border-gray-300'
+                  errors.sale_price ? 'border-red-300' : 'border-gray-300'
+                }`}
+                placeholder="0.00"
+              />
+              {errors.price && <p className="mt-1 text-sm text-red-600">{errors.price}</p>}
+            </div>
+            <div>
+              <label htmlFor="price" className="block text-sm font-medium text-gray-700 mb-2">
+                سعر الشراء*
+              </label>
+              <input
+                type="number"
+                id="purchase_price"
+                name="purchase_price"
+                value={formData.purchase_price}
+                onChange={handleChange}
+                step="0.01"
+                className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  errors.purchase_price ? 'border-red-300' : 'border-gray-300'
                 }`}
                 placeholder="0.00"
               />
