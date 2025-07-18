@@ -4,6 +4,7 @@ import Modal from '../components/Modal';
 import InvoiceForm from '../components/InvoiceForm';
 import invoicesService from '../services/invoicesService';
 import api from '../api';
+import clientService from '../services/clientService';
 import InvoiceViewModal from '../components/InvoiceViewModal';
 const Invoices = () => {
   const [invoices, setInvoices] = useState([]);
@@ -15,6 +16,8 @@ const Invoices = () => {
   const [page, setPage] = useState(1);
 const [limit] = useState(10);
 const [totalPages, setTotalPages] = useState(1);
+const [clientBalances, setClientBalances] = useState({});
+const [loadingBalances, setLoadingBalances] = useState(false);
 
  /* useEffect(() => {
     loadInvoices();
@@ -37,6 +40,28 @@ useEffect(() => {
     .then(res => setStats(res.data))
     .catch(console.error);
 }, []);
+
+  // Fetch client balances for all invoices
+  useEffect(() => {
+    const fetchBalances = async () => {
+      if (!invoices || invoices.length === 0) return;
+      setLoadingBalances(true);
+      const balances = {};
+      await Promise.all(invoices.map(async (inv) => {
+        if (inv.clientId && !balances[inv.clientId]) {
+          try {
+            const data = await clientService.getById(inv.clientId);
+            balances[inv.clientId] = typeof data.balance === 'number' ? data.balance : 0;
+          } catch {
+            balances[inv.clientId] = 0;
+          }
+        }
+      }));
+      setClientBalances(balances);
+      setLoadingBalances(false);
+    };
+    fetchBalances();
+  }, [invoices]);
 
 
   const loadInvoices = async () => {
@@ -242,6 +267,7 @@ useEffect(() => {
                   <th className="px-5 py-3 sm:px-6 text-right text-sm font-medium text-gray-900 dark:text-white">المورد</th>
                   <th className="px-5 py-3 sm:px-6 text-right text-sm font-medium text-gray-900 dark:text-white">التاريخ</th>
                   <th className="px-5 py-3 sm:px-6 text-right text-sm font-medium text-gray-900 dark:text-white">المبلغ</th>
+                  <th className="px-5 py-3 sm:px-6 text-right text-sm font-medium text-gray-900 dark:text-white">السابق</th>
                   <th className="px-5 py-3 sm:px-6 text-right text-sm font-medium text-gray-900 dark:text-white">الحالة</th>
                   <th className="px-5 py-3 sm:px-6 text-right text-sm font-medium text-gray-900 dark:text-white">الإجراءات</th>
                 </tr>
@@ -284,6 +310,15 @@ useEffect(() => {
                           {invoice.totalAmount}
                         </span>
                       </div>
+                    </td>
+                    <td className="px-5 py-4 sm:px-6">
+                      <span className="text-sm text-gray-900 dark:text-white">
+                        {loadingBalances
+                          ? '...'
+                          : (clientBalances[invoice.clientId] !== undefined
+                              ? Number(clientBalances[invoice.clientId]).toFixed(2)
+                              : '0.00')}
+                      </span>
                     </td>
                     <td className="px-5 py-4 sm:px-6">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(invoice.status)} dark:bg-opacity-80`}>
