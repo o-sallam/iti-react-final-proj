@@ -72,8 +72,8 @@ const ProductForm = () => {
     if (!formData.purchase_price || parseFloat(formData.purchase_price) <= 0) {
       newErrors.purchase_price = 'السعر يجب أن يكون أكبر من 0';
     }
- if (!formData.sale_price || parseFloat(formData.sale_price) <= 0) {
-      newErrors.sale_price = 'السعر يجب أن يكون أكبر من 0';
+ if (!formData.sale_price || parseFloat(formData.sale_price) < 0) {
+      newErrors.sale_price = 'السعر يجب أن يكون أكبر من او يساوي  0';
     }
     if (!formData.stock || parseInt(formData.stock) < 0) {
       newErrors.stock = 'المخزون يجب أن يكون 0 أو أكثر';
