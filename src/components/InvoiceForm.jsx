@@ -13,7 +13,7 @@ const InvoiceFormPage = () => {
   const [formData, setFormData] = useState({
     invoiceNumber: '',
     supplierId: '',
-    invoiceDate: new Date().toISOString().split('T')[0],
+    orderDate : new Date().toISOString().split('T')[0],
     status: 'pending',
     paymentMethod: 'cash',
     notes: '',
@@ -458,14 +458,14 @@ const fetchWarehouses = async () => {
                 <input
                   type="date"
                   name="invoiceDate"
-                  value={formData.invoiceDate}
+                  value={formData.orderDate}
                   onChange={handleChange}
                   className={`w-full px-2 py-1 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500 ${
-                    errors.invoiceDate ? 'border-red-500' : 'border-gray-300'
+                    errors.orderDate ? 'border-red-500' : 'border-gray-300'
                   }`}
                 />
-                {errors.invoiceDate && (
-                  <p className="text-xs text-red-500 mt-1">{errors.invoiceDate}</p>
+                {errors.orderDate && (
+                  <p className="text-xs text-red-500 mt-1">{errors.orderDate}</p>
                 )}
               </div>
 
