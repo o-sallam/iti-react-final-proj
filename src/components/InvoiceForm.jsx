@@ -134,7 +134,7 @@ const loadInvoice = async (invoiceId) => {
   };
 
   const calculateTotal = () => {
-    return formData.items.reduce((sum, item) => sum + (item.total || 0), 0);
+    return formData.items?.reduce((sum, item) => sum + (item.total || 0), 0);
   };
 
   useEffect(() => {
@@ -251,9 +251,9 @@ const handleSelectProduct = (index, product) => {
 
 useEffect(() => {
     fetchWarehouses();
-    if (isEdit) {
+   /* if (isEdit) {
       fetchProduct();
-    }
+    }*/
   }, [id, isEdit]);
 
 const fetchWarehouses = async () => {
@@ -407,7 +407,7 @@ const fetchWarehouses = async () => {
       </div>
 
       <div className="space-y-3">
-        {formData.items.map((item, index) => (
+        {formData.items?.map((item, index) => (
           <div key={index} className="grid grid-cols-1 md:grid-cols-5 gap-2 p-2 border rounded-md">
             <div className="md:col-span-2 relative">
   <label className="block mb-1">المنتج *</label>
@@ -518,7 +518,7 @@ const fetchWarehouses = async () => {
     {/* المجموع */}
     <div className="p-2 bg-gray-50 rounded-md text-xs font-semibold flex justify-between">
       <span>المجموع الكلي:</span>
-      <span>₪{calculateTotal().toFixed(2)}</span>
+      <span>₪{(calculateTotal() || 0).toFixed(2)}</span>
     </div>
 
     {/* الملاحظات */}

@@ -67,7 +67,7 @@ const SupplierForm = ({ supplier, onSubmit, onCancel }) => {
 return (
   <form
     onSubmit={handleSubmit}
-className="max-w-md mx-auto p-4 bg-white rounded-md shadow space-y-3 overflow-y-auto max-h-[85vh] text-sm"
+className="max-w-md mx-auto p-1 bg-white rounded-md shadow space-y-3 overflow-y-auto max-h-[85vh] text-sm"
   >
     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
       <div>
