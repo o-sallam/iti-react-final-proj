@@ -4,6 +4,8 @@ import Modal from '../components/Modal';
 import InvoiceForm from '../components/InvoiceForm';
 import invoicesService from '../services/invoicesService';
 import api from '../api';
+import { Link } from 'react-router-dom';
+
 import clientService from '../services/clientService';
 import InvoiceViewModal from '../components/InvoiceViewModal';
 const Invoices = () => {
@@ -19,9 +21,10 @@ const [totalPages, setTotalPages] = useState(1);
 const [clientBalances, setClientBalances] = useState({});
 const [loadingBalances, setLoadingBalances] = useState(false);
 
- /* useEffect(() => {
-    loadInvoices();
-  }, []);*/
+const [selectedInvoice, setSelectedInvoice] = useState(null);
+
+const [showModal, setShowModal] = useState(false);
+
   useEffect(() => {
   loadInvoices();
 }, [searchTerm, filterStatus, page]);
@@ -84,11 +87,6 @@ useEffect(() => {
   }
 };
 
-
-  const handleAddInvoice = () => {
-    setEditingInvoice(null);
-    setIsModalOpen(true);
-  };
 
   const handleEditInvoice = (invoice) => {
     setEditingInvoice(invoice);
@@ -153,13 +151,14 @@ useEffect(() => {
             </h1>
             <p className="text-gray-600 dark:text-gray-300">إدارة جميع الفواتير والمدفوعات</p>
           </div>
-          <button
-            onClick={handleAddInvoice}
-            className="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 dark:bg-brand-400 dark:hover:bg-brand-500"
-          >
-            <Plus size={20} className="ml-2" />
-            <span>إنشاء فاتورة جديدة</span>
-          </button>
+         <Link
+  to="/invoices/new"
+  className="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 dark:bg-brand-400 dark:hover:bg-brand-500"
+>
+  <Plus size={20} className="ml-2" />
+  <span>إنشاء فاتورة جديدة</span>
+</Link>
+
         </div>
       </div>
 
@@ -327,20 +326,29 @@ useEffect(() => {
                     </td>
                     <td className="px-5 py-4 sm:px-6">
                       <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => handleEditInvoice(invoice)}
-                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors dark:text-blue-400 dark:hover:bg-blue-900"
-                          title="تعديل"
-                        >
-                          <Edit size={16} />
-                        </button>
-                        <button
-                          className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors dark:text-green-400 dark:hover:bg-green-900"
-                          title="عرض"
-                          onClick={() => {}}
-                        >
-                          <Eye size={16} />
-                        </button>
+<Link
+  to={`/invoices/edit/${invoice.id}`}
+    state={{ invoice }}
+
+  className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors dark:text-blue-400 dark:hover:bg-blue-900"
+  title="تعديل"
+>
+  <Edit size={16} />
+</Link>                       
+           <button
+         className="p-2 text-green-600 hover:bg-green-50 rounded-lg"
+         title="عرض"
+         onClick={() =>{
+     setSelectedInvoice(invoice); setShowModal(true)}}
+       >
+         <Eye size={16} />
+       </button>
+ 
+       {/* مودال العرض */}
+       {showModal && (
+         <InvoiceViewModal invoice={selectedInvoice} onClose={() => setShowModal(false)}   getStatusText={getStatusText}
+  />
+       )}
                         <button
                           className="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors dark:text-purple-400 dark:hover:bg-purple-900"
                           title="تحميل"
@@ -374,13 +382,13 @@ useEffect(() => {
             لا توجد فواتير
           </h3>
           <p className="text-gray-600 mb-4 dark:text-gray-300">ابدأ بإنشاء فاتورة جديدة</p>
-          <button
-            onClick={handleAddInvoice}
-            className="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 dark:bg-brand-400 dark:hover:bg-brand-500"
-          >
-            إنشاء فاتورة جديدة
-          </button>
-        </div>
+  <Link
+  to="/invoices/new"
+  className="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 dark:bg-brand-400 dark:hover:bg-brand-500"
+>
+  <Plus size={20} className="ml-2" />
+  <span>إنشاء فاتورة جديدة</span>
+</Link>        </div>
       )}
 
       {/* Pagination */}
@@ -408,18 +416,6 @@ useEffect(() => {
         </div>
       )}
 
-      {/* Modal */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title={editingInvoice ? "تعديل الفاتورة" : "إنشاء فاتورة جديدة"}
-      >
-        <InvoiceForm
-          invoice={editingInvoice}
-          onSubmit={handleSubmitInvoice}
-          onCancel={() => setIsModalOpen(false)}
-        />
-      </Modal>
     </div>
 
     
