@@ -14,7 +14,7 @@ const ProductForm = () => {
     name: '',
     description: '',
     price: '',
-    sku: '',
+   // sku: '',
     isActive: true,
     stock: '',
     warehouseId: ''
@@ -48,7 +48,7 @@ const ProductForm = () => {
         name: product.name || '',
         description: product.description || '',
         price: product.price || '',
-        sku: product.sku || '',
+       // sku: product.sku || '',
         isActive: product.isActive,
         stock: product.stock || '',
         warehouseId: product.inventory?.warehouseId || ''
@@ -65,9 +65,9 @@ const ProductForm = () => {
       newErrors.name = 'اسم المنتج مطلوب';
     }
 
-    if (!formData.sku.trim()) {
+   /* if (!formData.sku.trim()) {
       newErrors.sku = 'رمز المنتج مطلوب';
-    }
+    }*/
 
     if (!formData.price || parseFloat(formData.price) <= 0) {
       newErrors.price = 'السعر يجب أن يكون أكبر من 0';
@@ -186,23 +186,7 @@ const ProductForm = () => {
               {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
             </div>
 
-            <div>
-              <label htmlFor="sku" className="block text-sm font-medium text-gray-700 mb-2">
-                رمز المنتج *
-              </label>
-              <input
-                type="text"
-                id="sku"
-                name="sku"
-                value={formData.sku}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors.sku ? 'border-red-300' : 'border-gray-300'
-                }`}
-                placeholder="أدخل رمز المنتج"
-              />
-              {errors.sku && <p className="mt-1 text-sm text-red-600">{errors.sku}</p>}
-            </div>
+            
           </div>
 
           <div>
