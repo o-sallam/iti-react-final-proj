@@ -1,11 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import cashierService from '../services/cashierService';
-import { Edit, User, Lock, Archive } from 'lucide-react';
+import { Edit, User, Lock, Archive, Plus, X } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
+import NotAuthorized from './NotAuthorized';
 
 const Cashiers = () => {
+  const { user } = useAuth();
+  const notAuthorized = !user || (user.role !== 'admin' && user.role !== 'manager');
+
   const [cashiers, setCashiers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [form, setForm] = useState({ username: '', password: '' });
+  const [formLoading, setFormLoading] = useState(false);
+  const [formError, setFormError] = useState('');
+
+  if (notAuthorized) {
+    return <NotAuthorized />;
+  }
 
   useEffect(() => {
     fetchCashiers();
@@ -25,8 +38,45 @@ const Cashiers = () => {
   };
 
   const handleEditPassword = (cashier) => {
-    // Implement password edit modal or navigation here
     alert(`تعديل كلمة المرور للكاشير: ${cashier.username}`);
+  };
+
+  const handleOpenModal = () => {
+    setForm({ username: '', password: '', drawer: '' });
+    setFormError('');
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setFormError('');
+  };
+
+  const handleFormChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    setFormError('');
+    if (!form.username || !form.password) {
+      setFormError('جميع الحقول مطلوبة');
+      return;
+    }
+    setFormLoading(true);
+    try {
+      await cashierService.create({
+        username: form.username,
+        password: form.password,
+        role: 'cashier',
+      });
+      setShowModal(false);
+      fetchCashiers();
+    } catch {
+      setFormError('حدث خطأ أثناء إنشاء الكاشير');
+    } finally {
+      setFormLoading(false);
+    }
   };
 
   if (loading) {
@@ -39,16 +89,78 @@ const Cashiers = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-gray-50 dark:bg-gray-900 min-h-screen" dir="rtl">
-      <div className="mb-8">
+      <div className="mb-8 flex items-center justify-between">
         <div className="flex items-center">
           <User className="h-8 w-8 text-blue-600 ml-3" />
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">الكاشيرز</h1>
         </div>
+        <button
+          onClick={handleOpenModal}
+          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
+        >
+          <Plus className="h-5 w-5" />
+          إضافة كاشير
+        </button>
       </div>
 
       {error && (
         <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4 dark:bg-red-950 dark:border-red-900">
           <p className="text-red-600 dark:text-red-400">{error}</p>
+        </div>
+      )}
+
+      {/* Modal for creating cashier */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md relative">
+            <button
+              onClick={handleCloseModal}
+              className="absolute left-4 top-4 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">إضافة كاشير جديد</h2>
+            <form onSubmit={handleFormSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm text-gray-700 dark:text-gray-200 mb-1">اسم المستخدم</label>
+                <input
+                  type="text"
+                  name="username"
+                  value={form.username}
+                  onChange={handleFormChange}
+                  className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-white border-gray-300 dark:border-gray-700"
+                  placeholder="اسم المستخدم"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-700 dark:text-gray-200 mb-1">كلمة المرور</label>
+                <input
+                  type="password"
+                  name="password"
+                  value={form.password}
+                  onChange={handleFormChange}
+                  className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-white border-gray-300 dark:border-gray-700"
+                  placeholder="كلمة المرور"
+                />
+              </div>
+              {/* No drawer input needed */}
+              {formError && <p className="text-sm text-red-600 dark:text-red-400">{formError}</p>}
+              <div className="flex justify-end mt-4">
+                <button
+                  type="submit"
+                  disabled={formLoading}
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
+                >
+                  {formLoading ? (
+                    <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
+                  ) : (
+                    <Plus className="h-4 w-4" />
+                  )}
+                  إنشاء كاشير
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
@@ -65,7 +177,7 @@ const Cashiers = () => {
               </div>
               <div className="flex items-center text-sm text-gray-600 dark:text-gray-300 mb-2">
                 <Archive className="h-4 w-4 text-gray-400 dark:text-gray-500 ml-2" />
-                <span>الدُرج: {cashier.drawer}</span>
+                <span>الدُرج: {cashier.drawer} ج.م</span>
               </div>
               <div className="text-sm text-gray-700 dark:text-gray-200 mb-1">
                 <span className="font-medium">الدور:</span> {cashier.role}

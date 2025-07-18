@@ -5,6 +5,10 @@ const cashierService = {
     const res = await api.get('/auth/cashiers');
     return res.data;
   },
+  create: async (cashierData) => {
+    const res = await api.post('/auth/register', cashierData);
+    return res.data;
+  },
 };
 
 export default cashierService; 

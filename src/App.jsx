@@ -25,6 +25,7 @@ import Register from "./pages/Register";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Cashiers from "./pages/cashiers";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
@@ -73,7 +74,7 @@ function App() {
             <Route path="/cashiers" element={<Cashiers />} />
 
             {/* Catch all route */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
       </AuthProvider>
