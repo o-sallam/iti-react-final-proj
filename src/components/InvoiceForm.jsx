@@ -182,22 +182,30 @@ const loadInvoice = async (invoiceId) => {
 
 const handleSubmit = async (e) => {
   e.preventDefault();
-  if (validateForm()) {
-const selectedSupplier = suppliers?.find?.(s => s.id === formData.supplierId);
-    const submitData = {
-      ...formData,
-      supplierName: selectedSupplier?.name || '',
-      supplierEmail: selectedSupplier?.email || '',
-      totalAmount: parseFloat(calculateTotal().toFixed(2))
-    };
 
-    try {
-      await invoicesService.create(submitData);    
-      console.log('Submitting Invoice:', submitData);
-      navigate('/invoices');
-    } catch (error) {
-      console.error('Error creating invoice:', error);
+  if (!validateForm()) return;
+
+  const selectedSupplier = suppliers.find?.(s => s.id === formData.supplierId);
+
+  const submitData = {
+    ...formData,
+    supplierName: selectedSupplier?.name || '',
+    supplierEmail: selectedSupplier?.email || '',
+    totalAmount: parseFloat(calculateTotal().toFixed(2))
+  };
+
+  try {
+    if (id) {
+      await invoicesService.update(id, submitData);
+      console.log('Updated Invoice:', submitData);
+    } else {
+      await invoicesService.create(submitData);
+      console.log('Created Invoice:', submitData);
     }
+
+    navigate('/invoices');
+  } catch (error) {
+    console.error('Error submitting invoice:', error);
   }
 };
 
@@ -258,7 +266,9 @@ const fetchWarehouses = async () => {
   };
   return (
     <div className="p-4 max-w-3xl mx-auto  bg-white shadow rounded-md">
-      <h2 className="text-lg font-semibold mb-4">إنشاء فاتورة جديدة</h2>
+<h2 className="text-lg font-semibold mb-4">
+  {id ? 'تعديل الفاتورة' : 'إنشاء فاتورة شراء'}
+</h2>
       <form onSubmit={handleSubmit} className="space-y-4 text-xs">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
       <div>
@@ -469,7 +479,7 @@ const fetchWarehouses = async () => {
                   onClick={() => removeItem(index)}
                   className="inline-flex items-center gap-2 px-2 py-2 text-sm font-medium text-white transition rounded-lg bg-red-500 shadow-theme-xs hover:bg-red-600"
                 >
-                  <Trash2 size={16} />
+                  <Trash2 size={11} />
                 </button>
               )}
             </div>

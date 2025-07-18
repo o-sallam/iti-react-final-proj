@@ -24,7 +24,6 @@ const SupplierForm = ({ supplier, onSubmit, onCancel }) => {
       [name]: value
     }));
     
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
