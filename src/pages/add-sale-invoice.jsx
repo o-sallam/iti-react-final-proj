@@ -2,7 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Trash2, List, Calculator, Plus, Check } from 'lucide-react';
 import clientService from '../services/clientService';
+import warehouseService from '../services/warehouseService';
+import productService from '../services/productService';
+import saleinvoicesService from '../services/saleinvoicesService';
 import { createPortal } from 'react-dom';
+import Modal from '../components/Modal';
 
 const DUMMY_PRODUCTS = [
   { id: 13, name: 'مفروم [20] 700', price: 165 },
@@ -11,21 +15,15 @@ const DUMMY_PRODUCTS = [
   { id: 16, name: 'سجق [8] 400', price: 110 },
 ];
 
-const initialItems = [
-  {
-    id: 13,
-    name: 'مفروم [20] 700',
-    quantity: 1,
-    price: 165,
-    value: 165,
-  },
-];
+const initialItems = [];
 
 const AddSaleInvoice = () => {
   const { clientId } = useParams();
   const navigate = useNavigate();
   const [client, setClient] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [warehouses, setWarehouses] = useState([]);
+  const [selectedWarehouseId, setSelectedWarehouseId] = useState('');
 
   const previous = typeof client?.balance === 'number' ? client.balance : 0;
   const branch = 'المخزن الرئيسي';
@@ -37,9 +35,16 @@ const AddSaleInvoice = () => {
   const [inputSearch, setInputSearch] = useState('');
   const [inputQuantity, setInputQuantity] = useState(1);
   const [inputSearchResults, setInputSearchResults] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
   const inputRef = React.useRef();
+  const quantityRef = React.useRef();
   const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
   const dropdownRef = React.useRef();
+  const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+  const [duplicateProductName, setDuplicateProductName] = useState('');
+  const [pendingRow, setPendingRow] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   // Position dropdown when inputSearchResults changes
   useEffect(() => {
@@ -90,6 +95,22 @@ const AddSaleInvoice = () => {
     }
   }, [clientId]);
 
+  // Fetch warehouses on mount
+  useEffect(() => {
+    const fetchWarehouses = async () => {
+      try {
+        const data = await warehouseService.getAllWarehouses();
+        setWarehouses(data);
+        if (data.length > 0) setSelectedWarehouseId(data[0].id);
+      } catch (e) {
+        setWarehouses([]);
+      }
+    };
+    fetchWarehouses();
+  }, []);
+
+  const selectedWarehouse = warehouses.find(w => w.id === selectedWarehouseId);
+
   const total = items.reduce((sum, item) => sum + (Number(item.value) || 0), 0);
   const remaining = total + previous - (Number(paid) || 0);
 
@@ -97,35 +118,64 @@ const AddSaleInvoice = () => {
     setItems((prev) => prev.filter((_, i) => i !== idx));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    if (!selectedWarehouseId || !clientId || items.length === 0) {
+      alert('يرجى اختيار العميل والمخزن وإضافة أصناف للفاتورة');
+      return;
+    }
     const invoiceData = {
-      client,
-      items,
-      total,
-      previous,
+      warehouseId: Number(selectedWarehouseId),
+      clientId: Number(clientId),
       paid: Number(paid) || 0,
-      remaining,
-      branch,
+      items: items.map(item => ({
+        productId: item.productId,
+        productName: item.name,
+        quantity: item.quantity,
+        salePrice: item.price,
+        total: item.price * item.quantity
+      }))
     };
-    alert('تم حفظ الفاتورة (تجريبي)');
-    console.log(invoiceData);
+    setSaving(true);
+    try {
+      await saleinvoicesService.create(invoiceData);
+      setShowSuccessModal(true);
+    } catch (err) {
+      alert('حدث خطأ أثناء حفظ الفاتورة');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSuccessModalClose = () => {
+    setShowSuccessModal(false);
+    setPaid('');
+    setItems([]);
   };
 
   // Product search for input row
   const handleInputSearchChange = (e) => {
-    const value = e.target.value;
-    setInputSearch(value);
+    setInputSearch(e.target.value);
     setInputProduct(null);
-    if (value.trim() === '') {
+  };
+
+  useEffect(() => {
+    if (inputSearch.trim() === '' || !selectedWarehouseId) {
       setInputSearchResults([]);
       return;
     }
-    const results = DUMMY_PRODUCTS.filter((p) =>
-      p.name.toLowerCase().includes(value.trim().toLowerCase()) ||
-      String(p.id).includes(value.trim())
-    );
-    setInputSearchResults(results);
-  };
+    setSearchLoading(true);
+    const handler = setTimeout(async () => {
+      try {
+        const results = await productService.searchProducts(inputSearch, selectedWarehouseId);
+        setInputSearchResults(results);
+      } catch {
+        setInputSearchResults([]);
+      } finally {
+        setSearchLoading(false);
+      }
+    }, 200);
+    return () => clearTimeout(handler);
+  }, [inputSearch, selectedWarehouseId]);
 
   const handleInputSelectProduct = (product) => {
     setInputProduct(product);
@@ -141,20 +191,48 @@ const AddSaleInvoice = () => {
 
   const handleApproveInputRow = () => {
     if (!inputProduct) return;
+    const newRow = {
+      id: inputProduct.id,
+      name: inputProduct.name,
+      quantity: inputQuantity,
+      price: inputProduct.sale_price,
+      value: inputProduct.sale_price * inputQuantity,
+      sku: inputProduct.sku,
+      productId: inputProduct.productId,
+      stock: inputProduct.quantity,
+    };
+    if (items.some(item => item.productId === inputProduct.productId)) {
+      setDuplicateProductName(inputProduct.name);
+      setPendingRow(newRow);
+      setShowDuplicateModal(true);
+      return;
+    }
     setItems((prev) => [
       ...prev,
-      {
-        id: inputProduct.id,
-        name: inputProduct.name,
-        quantity: inputQuantity,
-        price: inputProduct.price,
-        value: inputProduct.price * inputQuantity,
-      },
+      newRow,
     ]);
     setInputProduct(null);
     setInputSearch('');
     setInputQuantity(1);
     setInputSearchResults([]);
+    setPendingRow(null);
+    setTimeout(() => { inputRef.current && inputRef.current.focus(); }, 0);
+  };
+
+  const handleConfirmDuplicate = () => {
+    if (pendingRow) {
+      setItems((prev) => [
+        ...prev.filter(item => item.productId !== pendingRow.productId),
+        pendingRow,
+    ]);
+    }
+    setInputProduct(null);
+    setInputSearch('');
+    setInputQuantity(1);
+    setInputSearchResults([]);
+    setShowDuplicateModal(false);
+    setPendingRow(null);
+    setTimeout(() => { inputRef.current && inputRef.current.focus(); }, 0);
   };
 
   if (loading) {
@@ -203,7 +281,19 @@ const AddSaleInvoice = () => {
         <div className={`w-full md:w-64 flex-shrink-0 ${!showSummary && 'hidden md:block'}`}>
           <div className="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] p-4 flex flex-col gap-3">
             <div className="bg-blue-100 text-blue-600 text-center rounded-lg py-2 font-bold text-sm mb-2">الاجمالي: {total}</div>
-            <div className="bg-gray-100 text-gray-700 rounded-lg px-3 py-2 text-sm">الفرع: {branch}</div>
+            <div className="bg-gray-100 text-gray-700 rounded-lg px-3 py-2 text-sm">
+              الفرع:
+              <select
+                className="ml-2 rounded border border-gray-300 px-2 py-1 text-sm bg-white dark:bg-gray-900"
+                value={selectedWarehouseId}
+                onChange={e => setSelectedWarehouseId(e.target.value)}
+                disabled={items.length > 0}
+              >
+                {warehouses.map(w => (
+                  <option key={w.id} value={w.id}>{w.name}</option>
+                ))}
+              </select>
+            </div>
             <div className="bg-gray-100 text-gray-700 rounded-lg px-3 py-2 text-sm">العميل: {client.name}</div>
             <div className="bg-gray-100 text-gray-700 rounded-lg px-3 py-2 text-sm">السابق: {previous.toFixed(2)}</div>
             <input
@@ -215,10 +305,15 @@ const AddSaleInvoice = () => {
             />
             <div className="bg-gray-100 text-gray-700 rounded-lg px-3 py-2 text-sm">المتبقي عليه: {remaining}</div>
             <button
-              className="mt-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded-lg transition"
+              className={`mt-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded-lg transition flex items-center justify-center ${saving ? 'opacity-70 cursor-not-allowed' : ''}`}
               onClick={handleSave}
+              disabled={saving}
             >
-              حفظ
+              {saving ? (
+                <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin inline-block"></span>
+              ) : (
+                'حفظ'
+              )}
             </button>
           </div>
         </div>
@@ -267,39 +362,58 @@ const AddSaleInvoice = () => {
                     </tr>
                   ))}
                   {/* Input row */}
-                  <tr>
+                    <tr>
                     <td className="px-3 py-2">{inputProduct ? inputProduct.id : '-'}</td>
-                    <td className="px-3 py-2 relative">
-                      <input
+                      <td className="px-3 py-2 relative">
+                        <input
                         ref={inputRef}
-                        type="text"
-                        className="w-full rounded border border-gray-300 px-2 py-1 text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-200"
-                        placeholder="ابحث عن منتج..."
+                          type="text"
+                          className="w-full rounded border border-gray-300 px-2 py-1 text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-200"
+                          placeholder="ابحث عن منتج..."
                         value={inputSearch}
                         onChange={handleInputSearchChange}
-                        autoFocus
+                          autoFocus
                         readOnly={!!inputProduct}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter' && !inputProduct && inputSearchResults.length > 0) {
+                            e.preventDefault();
+                            handleInputSelectProduct(inputSearchResults[0]);
+                            setTimeout(() => {
+                              if (quantityRef.current) {
+                                quantityRef.current.focus();
+                                quantityRef.current.select();
+                              }
+                            }, 0);
+                          }
+                        }}
                       />
                     </td>
                     <td className="px-3 py-2">
                       <input
+                        ref={quantityRef}
                         type="number"
                         min="1"
                         className="w-16 rounded border border-gray-300 px-2 py-1 text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-200"
                         value={inputQuantity}
                         onChange={handleInputQuantityChange}
                         disabled={!inputProduct}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter' && inputProduct) {
+                            e.preventDefault();
+                            handleApproveInputRow();
+                          }
+                        }}
                       />
                     </td>
                     <td className="px-3 py-2">
                       <input
                         type="text"
                         className="w-20 rounded border border-gray-300 px-2 py-1 text-sm text-center bg-gray-100"
-                        value={inputProduct ? inputProduct.price : ''}
+                        value={inputProduct ? inputProduct.sale_price : ''}
                         readOnly
                       />
                     </td>
-                    <td className="px-3 py-2">{inputProduct ? (inputProduct.price * inputQuantity) : '-'}</td>
+                    <td className="px-3 py-2">{inputProduct ? (inputProduct.sale_price * inputQuantity) : '-'}</td>
                     <td className="px-3 py-2">
                       <button
                         className="bg-green-500 hover:bg-green-600 text-white rounded p-2"
@@ -309,8 +423,8 @@ const AddSaleInvoice = () => {
                       >
                         <Check size={18} />
                       </button>
-                    </td>
-                  </tr>
+                      </td>
+                    </tr>
                 </tbody>
               </table>
             </div>
@@ -330,7 +444,7 @@ const AddSaleInvoice = () => {
                     key={product.id}
                     className="px-3 py-2 cursor-pointer hover:bg-blue-100 text-right"
                     onClick={() => handleInputSelectProduct(product)}
-                  >
+              >
                     {product.name} - {product.price}
                   </li>
                 ))}
@@ -340,6 +454,45 @@ const AddSaleInvoice = () => {
           </div>
         </div>
       )}
+      {/* Duplicate product modal */}
+      <Modal isOpen={showDuplicateModal} onClose={() => setShowDuplicateModal(false)} title="تنبيه">
+        <div className="text-center"
+          tabIndex={0}
+          onKeyDown={e => {
+            if (e.key === 'Enter') {
+              handleConfirmDuplicate();
+              setTimeout(() => { inputRef.current && inputRef.current.focus(); }, 0);
+            }
+          }}
+        >
+          <div className="text-lg font-bold text-red-600 mb-2">هذا المنتج مضاف بالفعل للفاتورة</div>
+          <div className="text-gray-700 dark:text-gray-200">{duplicateProductName && `المنتج: ${duplicateProductName}`}</div>
+          <button
+            className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
+            onClick={handleConfirmDuplicate}
+            onKeyDown={e => {
+              if (e.key === 'Enter') {
+                handleConfirmDuplicate();
+                setTimeout(() => { inputRef.current && inputRef.current.focus(); }, 0);
+              }
+            }}
+          >
+            موافق
+          </button>
+        </div>
+      </Modal>
+      {/* Success modal */}
+      <Modal isOpen={showSuccessModal} onClose={handleSuccessModalClose} title="تمت العملية بنجاح">
+        <div className="text-center">
+          <div className="text-2xl font-bold text-green-600 mb-2">تم حفظ الفاتورة بنجاح</div>
+          <button
+            className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
+            onClick={handleSuccessModalClose}
+          >
+            موافق
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 };

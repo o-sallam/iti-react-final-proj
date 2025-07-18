@@ -12,6 +12,11 @@ const saleinvoicesService = {
     const res = await api.get(`${API_URL}/${id}`);
     return res.data;
   },
+
+  create: async (invoiceData) => {
+    const res = await api.post(`${API_URL}`, invoiceData);
+    return res.data;
+  },
 };
 
 export default saleinvoicesService; 
