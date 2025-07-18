@@ -215,7 +215,7 @@ const [searchTimeout, setSearchTimeout] = useState(null);
 
 const fetchProductSuggestions = async (query) => {
   try {
-    const response = await fetch(`/products?search=${query}`);
+    const response = await fetch(`http://localhost:3000/products?search=${query}`);
     const data = await response.json();
     setProductSuggestions(data);
   } catch (error) {
@@ -224,6 +224,7 @@ const fetchProductSuggestions = async (query) => {
 };
 
 const handleProductSearch = (index, query) => {
+  
   handleItemChange(index, 'description', query);
 
   // Debounce search
