@@ -47,22 +47,21 @@ const productService = {
     }
   },
 
-  searchProducts: async (query) => {
-    try {
-      const response = await api.get(`/products/search?q=${query}`);
-      return response.data;
-    } catch {
-      throw new Error('Failed to search products');
-    }
+  searchProducts: async (query, warehouseId) => {
+    const res = await api.get('/products/search', {
+      params: { q: query, warehouseId }
+    });
+    return res.data;
   },
 
-  // New method to fetch products with stock and warehouse info
-  getProductsWithStockWarehouse: async () => {
+  // New method to fetch products with quantity and warehouse info
+  getProductsWithQuantityWarehouse: async () => {
     try {
-      const response = await api.get('/products/with-stock-warehouse');
+      const response = await api.get('/products/with-quantity-warehouse');
+      // The backend should already return the new format: { product_id, product_name, warehouse_name, quantity }
       return response.data;
     } catch {
-      throw new Error('فشل في جلب المنتجات مع المخزون والمخزن');
+      throw new Error('فشل في جلب المنتجات مع الكمية والمخزن');
     }
   }
 };

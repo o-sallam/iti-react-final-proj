@@ -1,6 +1,12 @@
-import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Trash2, List, Calculator, Plus } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Trash2, List, Calculator, Plus, Check } from 'lucide-react';
+import clientService from '../services/clientService';
+import warehouseService from '../services/warehouseService';
+import productService from '../services/productService';
+import saleinvoicesService from '../services/saleinvoicesService';
+import { createPortal } from 'react-dom';
+import Modal from '../components/Modal';
 
 const DUMMY_PRODUCTS = [
   { id: 13, name: 'مفروم [20] 700', price: 165 },
@@ -9,31 +15,101 @@ const DUMMY_PRODUCTS = [
   { id: 16, name: 'سجق [8] 400', price: 110 },
 ];
 
-const initialItems = [
-  {
-    id: 13,
-    name: 'مفروم [20] 700',
-    quantity: 1,
-    price: 165,
-    value: 165,
-  },
-];
+const initialItems = [];
 
 const AddSaleInvoice = () => {
-  const location = useLocation();
+  const { clientId } = useParams();
   const navigate = useNavigate();
-  const client = location.state?.client;
+  const [client, setClient] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [warehouses, setWarehouses] = useState([]);
+  const [selectedWarehouseId, setSelectedWarehouseId] = useState('');
 
-  const previous = 15990;
+  const previous = typeof client?.balance === 'number' ? client.balance : 0;
   const branch = 'المخزن الرئيسي';
 
   const [items, setItems] = useState(initialItems);
   const [paid, setPaid] = useState('');
   const [showSummary, setShowSummary] = useState(true);
-  const [addingRow, setAddingRow] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [inputProduct, setInputProduct] = useState(null); // selected product for input row
+  const [inputSearch, setInputSearch] = useState('');
+  const [inputQuantity, setInputQuantity] = useState(1);
+  const [inputSearchResults, setInputSearchResults] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const inputRef = React.useRef();
+  const quantityRef = React.useRef();
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
+  const dropdownRef = React.useRef();
+  const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+  const [duplicateProductName, setDuplicateProductName] = useState('');
+  const [pendingRow, setPendingRow] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  // Position dropdown when inputSearchResults changes
+  useEffect(() => {
+    if (inputSearchResults.length > 0 && inputRef.current) {
+      const rect = inputRef.current.getBoundingClientRect();
+      setDropdownPos({
+        top: rect.bottom + window.scrollY,
+        left: rect.left + window.scrollX,
+        width: rect.width,
+      });
+    }
+  }, [inputSearchResults]);
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    if (inputSearchResults.length === 0) return;
+    function handleClick(e) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target) &&
+        inputRef.current &&
+        !inputRef.current.contains(e.target)
+      ) {
+        setInputSearchResults([]);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [inputSearchResults]);
+
+  // Fetch client data when component mounts
+  useEffect(() => {
+    const fetchClient = async () => {
+      try {
+        setLoading(true);
+        const clientData = await clientService.getById(clientId);
+        setClient(clientData);
+      } catch (error) {
+        console.error('Error fetching client:', error);
+        // Handle error - could redirect to clients page or show error message
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (clientId) {
+      fetchClient();
+    }
+  }, [clientId]);
+
+  // Fetch warehouses on mount
+  useEffect(() => {
+    const fetchWarehouses = async () => {
+      try {
+        const data = await warehouseService.getAllWarehouses();
+        setWarehouses(data);
+        if (data.length > 0) setSelectedWarehouseId(data[0].id);
+      } catch (e) {
+        setWarehouses([]);
+      }
+    };
+    fetchWarehouses();
+  }, []);
+
+  const selectedWarehouse = warehouses.find(w => w.id === selectedWarehouseId);
 
   const total = items.reduce((sum, item) => sum + (Number(item.value) || 0), 0);
   const remaining = total + previous - (Number(paid) || 0);
@@ -42,59 +118,130 @@ const AddSaleInvoice = () => {
     setItems((prev) => prev.filter((_, i) => i !== idx));
   };
 
-  const handleSave = () => {
-    const invoiceData = {
-      client,
-      items,
-      total,
-      previous,
-      paid: Number(paid) || 0,
-      remaining,
-      branch,
-    };
-    alert('تم حفظ الفاتورة (تجريبي)');
-    console.log(invoiceData);
-  };
-
-  // Add new row logic
-  const handleAddRow = () => {
-    setAddingRow(true);
-    setSearchTerm('');
-    setSearchResults([]);
-    setSelectedProduct(null);
-  };
-
-  const handleSearchChange = (e) => {
-    const value = e.target.value;
-    setSearchTerm(value);
-    if (value.trim() === '') {
-      setSearchResults([]);
+  const handleSave = async () => {
+    if (!selectedWarehouseId || !clientId || items.length === 0) {
+      alert('يرجى اختيار العميل والمخزن وإضافة أصناف للفاتورة');
       return;
     }
-    // Improved dummy search: case-insensitive, trims whitespace
-    const results = DUMMY_PRODUCTS.filter((p) =>
-      p.name.toLowerCase().includes(value.trim().toLowerCase()) ||
-      String(p.id).includes(value.trim())
-    );
-    setSearchResults(results);
+    const invoiceData = {
+      warehouseId: Number(selectedWarehouseId),
+      clientId: Number(clientId),
+      paid: Number(paid) || 0,
+      items: items.map(item => ({
+        productId: item.productId,
+        productName: item.name,
+        quantity: item.quantity,
+        salePrice: item.price,
+        total: item.price * item.quantity
+      }))
+    };
+    setSaving(true);
+    try {
+      await saleinvoicesService.create(invoiceData);
+      setShowSuccessModal(true);
+    } catch (err) {
+      alert('حدث خطأ أثناء حفظ الفاتورة');
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const handleSelectProduct = (product) => {
+  const handleSuccessModalClose = () => {
+    setShowSuccessModal(false);
+    setPaid('');
+    setItems([]);
+  };
+
+  // Product search for input row
+  const handleInputSearchChange = (e) => {
+    setInputSearch(e.target.value);
+    setInputProduct(null);
+  };
+
+  useEffect(() => {
+    if (inputSearch.trim() === '' || !selectedWarehouseId) {
+      setInputSearchResults([]);
+      return;
+    }
+    setSearchLoading(true);
+    const handler = setTimeout(async () => {
+      try {
+        const results = await productService.searchProducts(inputSearch, selectedWarehouseId);
+        setInputSearchResults(results);
+      } catch {
+        setInputSearchResults([]);
+      } finally {
+        setSearchLoading(false);
+      }
+    }, 200);
+    return () => clearTimeout(handler);
+  }, [inputSearch, selectedWarehouseId]);
+
+  const handleInputSelectProduct = (product) => {
+    setInputProduct(product);
+    setInputSearch(product.name);
+    setInputSearchResults([]);
+    setInputQuantity(1);
+  };
+
+  const handleInputQuantityChange = (e) => {
+    const val = parseInt(e.target.value, 10);
+    setInputQuantity(isNaN(val) || val < 1 ? 1 : val);
+  };
+
+  const handleApproveInputRow = () => {
+    if (!inputProduct) return;
+    const newRow = {
+      id: inputProduct.id,
+      name: inputProduct.name,
+      quantity: inputQuantity,
+      price: inputProduct.sale_price,
+      value: inputProduct.sale_price * inputQuantity,
+      sku: inputProduct.sku,
+      productId: inputProduct.productId,
+      stock: inputProduct.quantity,
+    };
+    if (items.some(item => item.productId === inputProduct.productId)) {
+      setDuplicateProductName(inputProduct.name);
+      setPendingRow(newRow);
+      setShowDuplicateModal(true);
+      return;
+    }
     setItems((prev) => [
       ...prev,
-      {
-        id: product.id,
-        name: product.name,
-        quantity: 1,
-        price: product.price,
-        value: product.price,
-      },
+      newRow,
     ]);
-    setAddingRow(false);
-    setSearchTerm('');
-    setSearchResults([]);
-    setSelectedProduct(null);
+    setInputProduct(null);
+    setInputSearch('');
+    setInputQuantity(1);
+    setInputSearchResults([]);
+    setPendingRow(null);
+    setTimeout(() => { inputRef.current && inputRef.current.focus(); }, 0);
   };
+
+  const handleConfirmDuplicate = () => {
+    if (pendingRow) {
+      setItems((prev) => [
+        ...prev.filter(item => item.productId !== pendingRow.productId),
+        pendingRow,
+    ]);
+    }
+    setInputProduct(null);
+    setInputSearch('');
+    setInputQuantity(1);
+    setInputSearchResults([]);
+    setShowDuplicateModal(false);
+    setPendingRow(null);
+    setTimeout(() => { inputRef.current && inputRef.current.focus(); }, 0);
+  };
+
+  if (loading) {
+    return (
+      <div className="p-8 text-center">
+        <p className="text-gray-600">جاري تحميل بيانات العميل...</p>
+      </div>
+    );
+  }
 
   if (!client) {
     return (
@@ -102,9 +249,9 @@ const AddSaleInvoice = () => {
         <p className="text-red-600">لا يوجد بيانات عميل. الرجاء العودة واختيار عميل.</p>
         <button
           className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
-          onClick={() => navigate(-1)}
+          onClick={() => navigate('/clients')}
         >
-          <ArrowLeft className="inline mr-2" /> عودة
+          <ArrowLeft className="inline mr-2" /> عودة للعملاء
         </button>
       </div>
     );
@@ -134,7 +281,19 @@ const AddSaleInvoice = () => {
         <div className={`w-full md:w-64 flex-shrink-0 ${!showSummary && 'hidden md:block'}`}>
           <div className="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] p-4 flex flex-col gap-3">
             <div className="bg-blue-100 text-blue-600 text-center rounded-lg py-2 font-bold text-sm mb-2">الاجمالي: {total}</div>
-            <div className="bg-gray-100 text-gray-700 rounded-lg px-3 py-2 text-sm">الفرع: {branch}</div>
+            <div className="bg-gray-100 text-gray-700 rounded-lg px-3 py-2 text-sm">
+              الفرع:
+              <select
+                className="ml-2 rounded border border-gray-300 px-2 py-1 text-sm bg-white dark:bg-gray-900"
+                value={selectedWarehouseId}
+                onChange={e => setSelectedWarehouseId(e.target.value)}
+                disabled={items.length > 0}
+              >
+                {warehouses.map(w => (
+                  <option key={w.id} value={w.id}>{w.name}</option>
+                ))}
+              </select>
+            </div>
             <div className="bg-gray-100 text-gray-700 rounded-lg px-3 py-2 text-sm">العميل: {client.name}</div>
             <div className="bg-gray-100 text-gray-700 rounded-lg px-3 py-2 text-sm">السابق: {previous.toFixed(2)}</div>
             <input
@@ -146,10 +305,15 @@ const AddSaleInvoice = () => {
             />
             <div className="bg-gray-100 text-gray-700 rounded-lg px-3 py-2 text-sm">المتبقي عليه: {remaining}</div>
             <button
-              className="mt-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded-lg transition"
+              className={`mt-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded-lg transition flex items-center justify-center ${saving ? 'opacity-70 cursor-not-allowed' : ''}`}
               onClick={handleSave}
+              disabled={saving}
             >
-              حفظ
+              {saving ? (
+                <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin inline-block"></span>
+              ) : (
+                'حفظ'
+              )}
             </button>
           </div>
         </div>
@@ -174,6 +338,7 @@ const AddSaleInvoice = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                  {/* Approved rows */}
                   {items.map((item, idx) => (
                     <tr key={item.id}>
                       <td className="px-3 py-2">{item.id}</td>
@@ -196,53 +361,138 @@ const AddSaleInvoice = () => {
                       </td>
                     </tr>
                   ))}
-                  {addingRow && (
+                  {/* Input row */}
                     <tr>
-                      <td className="px-3 py-2">-</td>
+                    <td className="px-3 py-2">{inputProduct ? inputProduct.id : '-'}</td>
                       <td className="px-3 py-2 relative">
                         <input
+                        ref={inputRef}
                           type="text"
                           className="w-full rounded border border-gray-300 px-2 py-1 text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-200"
                           placeholder="ابحث عن منتج..."
-                          value={searchTerm}
-                          onChange={handleSearchChange}
+                        value={inputSearch}
+                        onChange={handleInputSearchChange}
                           autoFocus
-                        />
-                        {searchResults.length > 0 && (
-                          <ul className="absolute z-50 left-0 right-0 bg-white border border-gray-200 rounded shadow mt-1 max-h-40 overflow-y-auto">
-                            {searchResults.map((product) => (
-                              <li
-                                key={product.id}
-                                className="px-3 py-2 cursor-pointer hover:bg-blue-100 text-right"
-                                onClick={() => handleSelectProduct(product)}
-                              >
-                                {product.name} - {product.price}
-                              </li>
-                            ))}
-                          </ul>
-                        )}
+                        readOnly={!!inputProduct}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter' && !inputProduct && inputSearchResults.length > 0) {
+                            e.preventDefault();
+                            handleInputSelectProduct(inputSearchResults[0]);
+                            setTimeout(() => {
+                              if (quantityRef.current) {
+                                quantityRef.current.focus();
+                                quantityRef.current.select();
+                              }
+                            }, 0);
+                          }
+                        }}
+                      />
+                    </td>
+                    <td className="px-3 py-2">
+                      <input
+                        ref={quantityRef}
+                        type="number"
+                        min="1"
+                        className="w-16 rounded border border-gray-300 px-2 py-1 text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-200"
+                        value={inputQuantity}
+                        onChange={handleInputQuantityChange}
+                        disabled={!inputProduct}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter' && inputProduct) {
+                            e.preventDefault();
+                            handleApproveInputRow();
+                          }
+                        }}
+                      />
+                    </td>
+                    <td className="px-3 py-2">
+                      <input
+                        type="text"
+                        className="w-20 rounded border border-gray-300 px-2 py-1 text-sm text-center bg-gray-100"
+                        value={inputProduct ? inputProduct.sale_price : ''}
+                        readOnly
+                      />
+                    </td>
+                    <td className="px-3 py-2">{inputProduct ? (inputProduct.sale_price * inputQuantity) : '-'}</td>
+                    <td className="px-3 py-2">
+                      <button
+                        className="bg-green-500 hover:bg-green-600 text-white rounded p-2"
+                        onClick={handleApproveInputRow}
+                        disabled={!inputProduct}
+                        title="اعتماد"
+                      >
+                        <Check size={18} />
+                      </button>
                       </td>
-                      <td className="px-3 py-2">-</td>
-                      <td className="px-3 py-2">-</td>
-                      <td className="px-3 py-2">-</td>
-                      <td className="px-3 py-2"></td>
                     </tr>
-                  )}
                 </tbody>
               </table>
             </div>
-            <div className="mt-4 flex justify-end">
-              <button
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 dark:bg-brand-400 dark:hover:bg-brand-500"
-                onClick={handleAddRow}
-                disabled={addingRow}
+            {/* Product search dropdown as portal */}
+            {inputSearchResults.length > 0 && createPortal(
+              <ul
+                ref={dropdownRef}
+                className="z-[9999] fixed bg-white border border-gray-200 rounded shadow max-h-60 overflow-y-auto w-[var(--dropdown-width)]"
+                style={{
+                  top: dropdownPos.top,
+                  left: dropdownPos.left,
+                  width: dropdownPos.width,
+                }}
               >
-                <Plus size={18} className="ml-2" /> إضافة صنف
-              </button>
-            </div>
+                {inputSearchResults.map((product) => (
+                  <li
+                    key={product.id}
+                    className="px-3 py-2 cursor-pointer hover:bg-blue-100 text-right"
+                    onClick={() => handleInputSelectProduct(product)}
+              >
+                    {product.name} - {product.price}
+                  </li>
+                ))}
+              </ul>,
+              document.body
+            )}
           </div>
         </div>
       )}
+      {/* Duplicate product modal */}
+      <Modal isOpen={showDuplicateModal} onClose={() => setShowDuplicateModal(false)} title="تنبيه">
+        <div className="text-center"
+          tabIndex={0}
+          onKeyDown={e => {
+            if (e.key === 'Enter') {
+              handleConfirmDuplicate();
+              setTimeout(() => { inputRef.current && inputRef.current.focus(); }, 0);
+            }
+          }}
+        >
+          <div className="text-lg font-bold text-red-600 mb-2">هذا المنتج مضاف بالفعل للفاتورة</div>
+          <div className="text-gray-700 dark:text-gray-200">{duplicateProductName && `المنتج: ${duplicateProductName}`}</div>
+          <button
+            className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
+            onClick={handleConfirmDuplicate}
+            onKeyDown={e => {
+              if (e.key === 'Enter') {
+                handleConfirmDuplicate();
+                setTimeout(() => { inputRef.current && inputRef.current.focus(); }, 0);
+              }
+            }}
+          >
+            موافق
+          </button>
+        </div>
+      </Modal>
+      {/* Success modal */}
+      <Modal isOpen={showSuccessModal} onClose={handleSuccessModalClose} title="تمت العملية بنجاح">
+        <div className="text-center">
+          <div className="text-2xl font-bold text-green-600 mb-2">تم حفظ الفاتورة بنجاح</div>
+          <button
+            className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
+            onClick={handleSuccessModalClose}
+          >
+            موافق
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 };

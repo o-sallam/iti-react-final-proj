@@ -42,7 +42,7 @@ function App() {
             <Route path="/warehouses/edit/:id" element={<WarehouseForm />} />
                                     <Route path="/inventory" element={<InventoryList />} />
                                     <Route path="/clients" element={<Client />} />
-                                    <Route path="/add-sale-invoice" element={<AddSaleInvoice />} />
+                                    <Route path="/add-sale-invoice/:clientId" element={<AddSaleInvoice />} />
 
           <Route path="/selling" element={<Selling />} />
           <Route path="/" element={<div className="p-6"><h1 className="text-2xl font-bold mb-4">Dashboard</h1><p>Welcome to your dashboard!</p></div>} />

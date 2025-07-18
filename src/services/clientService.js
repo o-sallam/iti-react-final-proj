@@ -12,6 +12,11 @@ const clientService = {
     const res = await api.get(`${API_URL}/${id}`);
     return res.data;
   },
+
+  create: async (clientData) => {
+    const res = await api.post(API_URL, clientData);
+    return res.data;
+  },
 };
 
 export default clientService; 
