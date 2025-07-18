@@ -13,6 +13,7 @@ import WarehouseForm from './pages/warehouses/warehouseForm';
 import  InventoryList from './pages/inventory';
 import Client from './pages/client';
 import AddSaleInvoice from './pages/add-sale-invoice';
+import  InvoiceForm from './components/InvoiceForm';
 
 
 import Login from './pages/Login';
@@ -30,6 +31,10 @@ function App() {
           <Route path="/suppliers" element={<Suppliers />} />
           <Route path="/purchase-orders" element={<PurchaseOrders />} />
           <Route path="/invoices" element={<Invoices />} />
+                    <Route path="/invoices/new" element={<InvoiceForm />} />
+                    <Route path="/invoices/edit/:id" element={<InvoiceForm />} />
+
+
             <Route path="/products" element={<ProductList />} />
                         <Route path="/products/new" element={<ProductForm />} />
                                     <Route path="/warehouses" element={<WarehouseList />} />

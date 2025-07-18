@@ -1,61 +1,71 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate ,useParams , } from 'react-router-dom';
 import { Save, X, Plus, Trash2 } from 'lucide-react';
 import { suppliersService } from '../services/supplierService';
+import invoicesService from '../services/invoicesService';
+import inventoryService from '../services/inventoryService';
+import warehouseService from '../services/warehouseService';
 
-const InvoiceForm = ({ invoice, onSubmit, onCancel }) => {
-const [formData, setFormData] = useState({
-  invoiceNumber: '',
-  supplierId: '',
-  invoiceDate: new Date().toISOString().split('T')[0],
-  status: 'pending',
-  paymentMethod: 'cash',
-  notes: '',
-  items: [{ description: '', quantity: 1, unitPrice: 0, total: 0 }],
-  paidAmount: 0,
-  remainingAmount: 0,
-});
-useEffect(() => {
-  if (invoice) {
-      console.log('invoice received in InvoiceForm:', invoice);
+const InvoiceFormPage = () => {
+  const navigate = useNavigate();
+  const { id } = useParams();
 
-    const items = invoice.items?.map(item => ({
-      description: item.description,
-      quantity: item.quantity,
-      unitPrice: item.unitPrice,
-      total: item.quantity * item.unitPrice,
-    })) || [{ description: '', quantity: 1, unitPrice: 0, total: 0 }];
-
-    const total = items.reduce((sum, item) => sum + item.total, 0);
-    const paid = invoice.paidAmount || 0;
-
-    setFormData({
-      invoiceNumber: invoice.invoiceNumber || '',
-      supplierId: invoice.supplier?.id?.toString() || '',
-
-     invoiceDate: invoice.orderDate?.slice(0, 10) ||  new Date().toISOString().split('T')[0],
-      status: invoice.status || 'pending',
-      paymentMethod: invoice.paymentMethod || 'cash',
-      notes: invoice.notes || '',
-      items,
-      paidAmount: paid,
-      remainingAmount: total - paid,
-    });
-  }
-}, [invoice]);
-
-
-
-
+  const [formData, setFormData] = useState({
+    invoiceNumber: '',
+    supplierId: '',
+    invoiceDate: new Date().toISOString().split('T')[0],
+    status: 'pending',
+    paymentMethod: 'cash',
+    notes: '',
+    items: [{ description: '', quantity: 1, unitPrice: 0, total: 0 }],
+    paidAmount: 0,
+    remainingAmount: 0,
+    warehouseId:'',
+  });
 
   const [suppliers, setSuppliers] = useState([]);
   const [errors, setErrors] = useState({});
+  const [warehouses, setWarehouses] = useState([]);
+  const [error, setError] = useState(null);
+  const isEdit = Boolean(id);
 
-  useEffect(() => {
+ /* useEffect(() => {
     loadSuppliers();
-    if (!invoice) {
+    generateInvoiceNumber();
+  }, []);*/
+
+ 
+ useEffect(() => {
+  const init = async () => {
+    await loadSuppliers();
+    if (id) {
+      await loadInvoice(id);
+    } else {
       generateInvoiceNumber();
     }
-  }, [invoice]);
+  };
+  init();
+}, [id]);
+
+const loadInvoice = async (invoiceId) => {
+  try {
+    const data = await invoicesService.getById(invoiceId);
+    setFormData({
+      invoiceNumber: data.invoiceNumber,
+      supplierId: data.supplierId,
+      invoiceDate: data.invoiceDate?.split('T')[0],
+      status: data.status,
+      paymentMethod: data.paymentMethod,
+      notes: data.notes || '',
+      items: data.items,
+      paidAmount: data.paidAmount,
+      remainingAmount: data.remainingAmount,
+    });
+  } catch (error) {
+    console.error('خطأ في تحميل الفاتورة:', error);
+  }
+};
+
 
   const loadSuppliers = async () => {
     try {
@@ -73,7 +83,7 @@ useEffect(() => {
     const day = String(today.getDate()).padStart(2, '0');
     const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
     const invoiceNumber = `INV-${year}${month}${day}-${random}`;
-    
+
     setFormData(prev => ({
       ...prev,
       invoiceNumber
@@ -86,7 +96,7 @@ useEffect(() => {
       ...prev,
       [name]: value
     }));
-    
+
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -98,12 +108,11 @@ useEffect(() => {
   const handleItemChange = (index, field, value) => {
     const newItems = [...formData.items];
     newItems[index][field] = value;
-    
-    // Calculate total for this item
+
     if (field === 'quantity' || field === 'unitPrice') {
       newItems[index].total = newItems[index].quantity * newItems[index].unitPrice;
     }
-    
+
     setFormData(prev => ({
       ...prev,
       items: newItems
@@ -128,38 +137,33 @@ useEffect(() => {
     return formData.items.reduce((sum, item) => sum + (item.total || 0), 0);
   };
 
-
-
   useEffect(() => {
-  const total = calculateTotal();
-  setFormData(prev => ({
-    ...prev,
-    remainingAmount: total - prev.paidAmount
-  }));
-}, [formData.paidAmount, formData.items]);
-
+    const total = calculateTotal();
+    setFormData(prev => ({
+      ...prev,
+      remainingAmount: total - prev.paidAmount
+    }));
+  }, [formData.paidAmount, formData.items]);
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.invoiceNumber.trim()) {
       newErrors.invoiceNumber = 'رقم الفاتورة مطلوب';
     }
-    
+
     if (!formData.supplierId) {
       newErrors.supplierId = 'المورد مطلوب';
     }
-    
+
     if (!formData.invoiceDate) {
       newErrors.invoiceDate = 'تاريخ الفاتورة مطلوب';
     }
-    
-  
-    
+
     if (formData.items.length === 0) {
       newErrors.items = 'يجب إضافة عنصر واحد على الأقل';
     }
-    
+
     formData.items.forEach((item, index) => {
       if (!item.description.trim()) {
         newErrors[`item_${index}_description`] = 'وصف المنتج مطلوب';
@@ -171,31 +175,92 @@ useEffect(() => {
         newErrors[`item_${index}_unitPrice`] = 'سعر الوحدة مطلوب';
       }
     });
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (validateForm()) {
-      const selectedSupplier = suppliers.find(s => s.id === formData.supplierId);
-      const submitData = {
-        ...formData,
-        supplierName: selectedSupplier?.name || '',
-        supplierEmail: selectedSupplier?.email || '',
-totalAmount: parseFloat(calculateTotal().toFixed(2))
-      };
-      onSubmit(submitData);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (validateForm()) {
+const selectedSupplier = suppliers?.find?.(s => s.id === formData.supplierId);
+    const submitData = {
+      ...formData,
+      supplierName: selectedSupplier?.name || '',
+      supplierEmail: selectedSupplier?.email || '',
+      totalAmount: parseFloat(calculateTotal().toFixed(2))
+    };
+
+    try {
+      await invoicesService.create(submitData);    
+      console.log('Submitting Invoice:', submitData);
+      navigate('/invoices');
+    } catch (error) {
+      console.error('Error creating invoice:', error);
+    }
+  }
+};
+
+
+  const [productSuggestions, setProductSuggestions] = useState([]);
+const [searchTimeout, setSearchTimeout] = useState(null);
+
+const fetchProductSuggestions = async (query) => {
+  try {
+    const response = await fetch(`/products?search=${query}`);
+    const data = await response.json();
+    setProductSuggestions(data);
+  } catch (error) {
+    console.error('Error fetching products:', error);
+  }
+};
+
+const handleProductSearch = (index, query) => {
+  handleItemChange(index, 'description', query);
+
+  // Debounce search
+  if (searchTimeout) clearTimeout(searchTimeout);
+  setSearchTimeout(
+    setTimeout(() => {
+      if (query.length >= 2) {
+        fetchProductSuggestions(query);
+      }
+    }, 300)
+  );
+};
+
+const handleSelectProduct = (index, product) => {
+  const updatedItems = [...formData.items];
+  updatedItems[index] = {
+    ...updatedItems[index],
+    description: product.name,
+    unitPrice: product.price,
+    productId: product.id,
+  };
+  setFormData({ ...formData, items: updatedItems });
+  setProductSuggestions([]);
+};
+
+useEffect(() => {
+    fetchWarehouses();
+    if (isEdit) {
+      fetchProduct();
+    }
+  }, [id, isEdit]);
+
+const fetchWarehouses = async () => {
+    try {
+      const data = await warehouseService.getAllWarehouses();
+      setWarehouses(data);
+    } catch (err) {
+      setError('فشل في تحميل المخازن');
     }
   };
-
-return (
-  <form
-    onSubmit={handleSubmit}
-    className="max-w-sm mx-auto mt-6 p-2 bg-white rounded-md shadow space-y-3 overflow-y-auto max-h-[85vh] text-xs"
-  >
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+  return (
+    <div className="p-4 max-w-3xl mx-auto  bg-white shadow rounded-md">
+      <h2 className="text-lg font-semibold mb-4">إنشاء فاتورة جديدة</h2>
+      <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
       <div>
         <label className="block font-medium text-gray-700 mb-1">رقم الفاتورة *</label>
         <input
@@ -209,7 +274,7 @@ return (
           placeholder="أدخل رقم الفاتورة"
         />
         {errors.invoiceNumber && (
-          <p className="text-red-500 text-xs mt-1">{errors.invoiceNumber}</p>
+          <p className="text-red-500  text-xl mt-1">{errors.invoiceNumber}</p>
         )}
       </div>
 
@@ -231,7 +296,7 @@ return (
           ))}
         </select>
         {errors.supplierId && (
-          <p className="text-red-500 text-xs mt-1">{errors.supplierId}</p>
+          <p className="text-red-500 text-s mt-1">{errors.supplierId}</p>
         )}
       </div>
 
@@ -281,7 +346,41 @@ return (
           <option value="check">شيك</option>
         </select>
       </div>
+<div>
+  <label className="block font-medium text-gray-700 mb-1">المخزن *</label>
+  <select
+    id="warehouseId"
+    name="warehouseId"
+    value={formData.warehouseId}
+    onChange={handleChange}
+    className={`w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+      errors.warehouseId ? 'border-red-300' : 'border-gray-300'
+    }`}
+    disabled={isEdit}
+  >
+    <option value="">اختر المخزن</option>
+    {warehouses.map((warehouse) => (
+      <option key={warehouse.id} value={warehouse.id}>
+        {warehouse.name} - {warehouse.location}
+      </option>
+    ))}
+  </select>
+
+  {errors.warehouseId && (
+    <p className="text-red-500 text-sm mt-1">{errors.warehouseId}</p>
+  )}
+
+  {isEdit && (
+    <p className="text-gray-500 text-sm mt-1">
+      لا يمكن تغيير المخزن للمنتجات الموجودة
+    </p>
+  )}
+</div>
+
     </div>
+
+
+
 
     {/* البنود */}
     <div>
@@ -300,18 +399,32 @@ return (
       <div className="space-y-3">
         {formData.items.map((item, index) => (
           <div key={index} className="grid grid-cols-1 md:grid-cols-5 gap-2 p-2 border rounded-md">
-            <div className="md:col-span-2">
-              <label className="block mb-1">الوصف *</label>
-              <input
-                type="text"
-                value={item.description}
-                onChange={(e) => handleItemChange(index, 'description', e.target.value)}
-                className={`w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${
-                  errors[`item_${index}_description`] ? 'border-red-500' : 'border-gray-300'
-                }`}
-                placeholder="أدخل وصف المنتج"
-              />
-            </div>
+            <div className="md:col-span-2 relative">
+  <label className="block mb-1">المنتج *</label>
+  <input
+    type="text"
+    value={item.description}
+    onChange={(e) => handleProductSearch(index, e.target.value)}
+    className={`w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+      errors[`item_${index}_description`] ? 'border-red-500' : 'border-gray-300'
+    }`}
+    placeholder="ابحث عن المنتج"
+  />
+  {productSuggestions.length > 0 && (
+    <ul className="absolute z-10 bg-white border border-gray-300 rounded mt-1 w-full max-h-40 overflow-y-auto shadow-lg">
+      {productSuggestions.map((product) => (
+        <li
+          key={product.id}
+          onClick={() => handleSelectProduct(index, product)}
+          className="px-3 py-2 cursor-pointer hover:bg-gray-100"
+        >
+          {product.name}
+        </li>
+      ))}
+    </ul>
+  )}
+</div>
+
 
             <div>
               <label className="block mb-1">الكمية *</label>
@@ -330,16 +443,17 @@ return (
             <div>
               <label className="block mb-1">سعر الوحدة *</label>
               <input
-                type="number"
-                value={item.unitPrice}
-                onChange={(e) => handleItemChange(index, 'unitPrice', parseFloat(e.target.value) || 0)}
-                className={`w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${
-                  errors[`item_${index}_unitPrice`] ? 'border-red-500' : 'border-gray-300'
-                }`}
-                min="0"
-                step="0.01"
-                placeholder="أدخل سعر الوحدة"
-              />
+  type="number"
+  value={item.unitPrice}
+  onChange={(e) => handleItemChange(index, 'unitPrice', parseFloat(e.target.value) || 0)}
+  className={`w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+    errors[`item_${index}_unitPrice`] ? 'border-red-500' : 'border-gray-300'
+  }`}
+  min="0"
+  step="0.01"
+  placeholder="أدخل سعر الوحدة"
+/>
+
             </div>
 
             <div className="flex items-end gap-1">
@@ -409,27 +523,27 @@ return (
         placeholder="أدخل ملاحظات إضافية"
       />
     </div>
-
-    {/* الأزرار */}
-    <div className="flex justify-end gap-2">
-      <button
-        type="button"
-        onClick={onCancel}
-        className="inline-flex items-center gap-2 px-1 py-1 text-sm font-medium text-gray-700 transition rounded-lg bg-gray-200 shadow-theme-xs hover:bg-gray-300"
-      >
-        <X size={10} />
-        إلغاء
-      </button>
-      <button
-        type="submit"
-        className="inline-flex items-center gap-2 px-1 py-1 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600"
-      >
-        <Save size={10} />
-        حفظ
-      </button>
+        {/* باقي الفورم كما هو تمامًا */}
+        {/* ... */}
+        
+        <div className="flex justify-end gap-2">
+          <button
+            type="button"
+            onClick={() => navigate('/invoices')}
+            className="inline-flex items-center gap-2 px-2 py-1 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
+          >
+            <X size={14} /> إلغاء
+          </button>
+          <button
+            type="submit"
+            className="inline-flex items-center gap-2 px-2 py-1 text-sm font-medium text-white bg-brand-500 rounded-md hover:bg-brand-600"
+          >
+            <Save size={14} /> حفظ
+          </button>
+        </div>
+      </form>
     </div>
-  </form>
-);
+  );
 };
 
-export default InvoiceForm;
+export default InvoiceFormPage;
