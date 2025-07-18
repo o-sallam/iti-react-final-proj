@@ -93,7 +93,7 @@ const AddSaleInvoice = () => {
         const data = await warehouseService.getAllWarehouses();
         setWarehouses(data);
         if (data.length > 0) setSelectedWarehouseId(data[0].id);
-      } catch (e) {
+      } catch {
         setWarehouses([]);
       }
     };
@@ -126,7 +126,7 @@ const AddSaleInvoice = () => {
     try {
       await saleinvoicesService.create(invoiceData);
       setShowSuccessModal(true);
-    } catch (err) {
+    } catch {
       alert('حدث خطأ أثناء حفظ الفاتورة');
     } finally {
       setSaving(false);
