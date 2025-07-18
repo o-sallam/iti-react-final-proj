@@ -8,12 +8,12 @@ import persist from "@alpinejs/persist";
 import flatpickr from "flatpickr";
 import Dropzone from "dropzone";
 
-import chart01 from "./components/charts/chart-01";
-import chart02 from "./components/charts/chart-02";
-import chart03 from "./components/charts/chart-03";
-import map01 from "./components/map-01";
+import chart01 from "./components/charts/chart-01.js";
+import chart02 from "./components/charts/chart-02.js";
+import chart03 from "./components/charts/chart-03.js";
+import map01 from "./components/map-01.js";
 import "./components/calendar-init.js";
-import "./components/image-resize";
+import "./components/image-resize.js";
 
 Alpine.plugin(persist);
 window.Alpine = Alpine;

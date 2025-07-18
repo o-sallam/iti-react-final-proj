@@ -26,6 +26,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Cashiers from "./pages/cashiers";
 import NotFound from "./pages/NotFound";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
   return (
@@ -47,12 +48,7 @@ function App() {
           >
             <Route
               index
-              element={
-                <div className="p-6">
-                  <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
-                  <p>Welcome to your dashboard!</p>
-                </div>
-              }
+              element={<Dashboard />}
             />
             <Route path="/suppliers" element={<Suppliers />} />
             <Route path="/purchase-orders" element={<PurchaseOrders />} />
