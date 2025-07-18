@@ -142,33 +142,13 @@ useEffect(() => {
 
   return (
     <div className="fade-in bg-gray-50 dark:bg-gray-900 min-h-screen">
-      {/* Page Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              إدارة الفواتير
-            </h1>
-            <p className="text-gray-600 dark:text-gray-300">إدارة جميع الفواتير والمدفوعات</p>
-          </div>
-         <Link
-  to="/invoices/new"
-  className="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 dark:bg-brand-400 dark:hover:bg-brand-500"
->
-  <Plus size={20} className="ml-2" />
-  <span>إنشاء فاتورة جديدة</span>
-</Link>
-
-        </div>
-      </div>
-
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
         <div className="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-800">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                إجمالي الفواتير
+                إجمالي المشتريات
               </p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</p>
             </div>
@@ -181,7 +161,7 @@ useEffect(() => {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                الفواتير المدفوعة
+                المشتريات المدفوعة
               </p>
               <p className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.paid}</p>
             </div>
@@ -194,7 +174,7 @@ useEffect(() => {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                الفواتير المعلقة
+                المشتريات المعلقة
               </p>
               <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{stats.pending}</p>
             </div>
@@ -207,7 +187,7 @@ useEffect(() => {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                الفواتير المتأخرة
+                المشتريات المتأخرة
               </p>
               <p className="text-2xl font-bold text-red-600 dark:text-red-400">{stats.overdue}</p>
             </div>
@@ -220,10 +200,10 @@ useEffect(() => {
 
       {/* Search and Filter */}
       <div className="bg-white rounded-xl shadow-sm p-6 mb-6 dark:bg-gray-800 dark:border dark:border-gray-700">
-        <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
           <div className="flex-1 relative">
             <Search
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-300"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-300"
               size={20}
             />
             <input
@@ -247,6 +227,13 @@ useEffect(() => {
               <option value="overdue">متأخر</option>
               <option value="cancelled">ملغي</option>
             </select>
+            <Link
+              to="/invoices/new"
+              className="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 dark:bg-brand-400 dark:hover:bg-brand-500"
+            >
+              <Plus size={20} className="ml-2" />
+              <span>إنشاء فاتورة جديدة</span>
+            </Link>
           </div>
         </div>
       </div>

@@ -79,23 +79,6 @@ const Suppliers = () => {
 
   return (
     <div className="fade-in">
-      {/* Page Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">إدارة الموردين</h1>
-            <p className="text-gray-600 dark:text-gray-400">إدارة جميع الموردين وبياناتهم</p>
-          </div>
-          <button
-            onClick={handleAddSupplier}
-            className="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600"
-          >
-            <Plus size={20} className="ml-2" />
-            <span>إضافة مورد جديد</span>
-          </button>
-        </div>
-      </div>
-
       {/* Search and Filter */}
       <div className="bg-white dark:bg-[#182235] rounded-xl shadow-sm p-6 mb-6">
         <div className="flex flex-col md:flex-row gap-4">
@@ -120,6 +103,13 @@ const Suppliers = () => {
               <option value="active">نشط</option>
               <option value="inactive">غير نشط</option>
             </select>
+            <button
+              onClick={handleAddSupplier}
+              className="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600"
+            >
+              <Plus size={20} className="ml-2" />
+              <span>إضافة مورد جديد</span>
+            </button>
           </div>
         </div>
       </div>

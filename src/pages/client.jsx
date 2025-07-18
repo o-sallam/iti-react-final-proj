@@ -63,25 +63,6 @@ const Client = () => {
 
   return (
     <div className="fade-in bg-gray-50 dark:bg-gray-900 min-h-screen">
-      {/* Page Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              إدارة العملاء
-            </h1>
-            <p className="text-gray-600 dark:text-gray-300">إدارة جميع بيانات العملاء</p>
-          </div>
-          <button
-            onClick={handleAddClient}
-            className="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 dark:bg-brand-400 dark:hover:bg-brand-500"
-          >
-            <Plus size={20} className="ml-2" />
-            <span>إضافة عميل</span>
-          </button>
-        </div>
-      </div>
-
       {/* Modal for Add Client */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
@@ -156,7 +137,7 @@ const Client = () => {
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1 relative">
             <Search
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-300"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-300"
               size={20}
             />
             <input
@@ -166,6 +147,13 @@ const Client = () => {
               disabled
             />
           </div>
+          <button
+            onClick={handleAddClient}
+            className="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 dark:bg-brand-400 dark:hover:bg-brand-500 mt-4 md:mt-0"
+          >
+            <Plus size={20} className="ml-2" />
+            <span>إضافة عميل</span>
+          </button>
         </div>
       </div>
 

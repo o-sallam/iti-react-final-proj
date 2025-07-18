@@ -36,7 +36,7 @@ const Selling = () => {
         <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
           <div className="flex-1 relative">
             <Search
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-300"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-300"
               size={20}
             />
             <input
