@@ -243,7 +243,7 @@ const handleSelectProduct = (index, product) => {
   updatedItems[index] = {
     ...updatedItems[index],
     description: product.name,
-    unitPrice: product.price,
+    unitPrice: product.purchase_price,
     productId: product.id,
   };
   setFormData({ ...formData, items: updatedItems });
