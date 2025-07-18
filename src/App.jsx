@@ -24,10 +24,10 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <Routes>
+      <Routes>
           {/* Auth routes - outside Layout */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
           
           {/* Protected routes - inside Layout */}
           <Route path="/" element={
@@ -41,20 +41,21 @@ function App() {
                 <p>Welcome to your dashboard!</p>
               </div>
             } />
-            <Route path="/suppliers" element={<Suppliers />} />
-            <Route path="/purchase-orders" element={<PurchaseOrders />} />
-            <Route path="/invoices" element={<Invoices />} />
-            <Route path="/invoices/edit/:id" element={<InvoiceForm />} />
+          <Route path="/suppliers" element={<Suppliers />} />
+          <Route path="/purchase-orders" element={<PurchaseOrders />} />
+          <Route path="/invoices" element={<Invoices />} />
+          <Route path="/invoices/new" element={<InvoiceForm />} />
+          <Route path="/invoices/edit/:id" element={<InvoiceForm />} />
             <Route path="/products" element={<ProductList />} />
-            <Route path="/products/new" element={<ProductForm />} />
-            <Route path="/warehouses" element={<WarehouseList />} />
+                        <Route path="/products/new" element={<ProductForm />} />
+                                    <Route path="/warehouses" element={<WarehouseList />} />
             <Route path="/warehouses/new" element={<WarehouseForm />} />
             <Route path="/warehouses/edit/:id" element={<WarehouseForm />} />
-            <Route path="/inventory" element={<InventoryList />} />
+                                    <Route path="/inventory" element={<InventoryList />} />
             <Route path="/clients" element={<Client />} />
             <Route path="/add-sale-invoice/:clientId" element={<AddSaleInvoice />} />
             <Route path="/selling" element={<Selling />} />
-            
+
             {/* Catch all route */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
