@@ -17,10 +17,9 @@ const InvoiceFormPage = () => {
     status: 'pending',
     paymentMethod: 'cash',
     notes: '',
-    items: [{ description: '', quantity: 0, unitPrice: 0, total: 0 }],
+    items: [{ description: '', quantity: 0, unitPrice: 0, total: 0 , warehouseId: 1}],
     paidAmount: 0,
     remainingAmount: 0,
-    warehouseId:'',
   });
 
   const [suppliers, setSuppliers] = useState([]);
@@ -59,7 +58,6 @@ const loadInvoice = async (invoiceId) => {
       notes: data.notes || '',
       items: data.items,
       paidAmount: data.paidAmount,
-      remainingAmount: data.remainingAmount,
     });
   } catch (error) {
     console.error('خطأ في تحميل الفاتورة:', error);
@@ -122,7 +120,7 @@ const loadInvoice = async (invoiceId) => {
   const addItem = () => {
     setFormData(prev => ({
       ...prev,
-      items: [...prev.items, { description: '', quantity: 0, unitPrice: 0, total: 0 }]
+      items: [...prev.items, { description: '', quantity: 0, unitPrice: 0, total: 0, warehouseId: 1}]
     }));
   };
 
@@ -156,7 +154,7 @@ const loadInvoice = async (invoiceId) => {
       newErrors.supplierId = 'المورد مطلوب';
     }
 
-    if (!formData.invoiceDate) {
+    if (!formData.orderDate) {
       newErrors.invoiceDate = 'تاريخ الفاتورة مطلوب';
     }
 
@@ -187,12 +185,24 @@ const handleSubmit = async (e) => {
 
   const selectedSupplier = suppliers.find?.(s => s.id === formData.supplierId);
 
-  const submitData = {
-    ...formData,
-    supplierName: selectedSupplier?.name || '',
-    supplierEmail: selectedSupplier?.email || '',
-    totalAmount: parseFloat(calculateTotal().toFixed(2))
-  };
+const submitData = {
+  invoiceNumber: formData.invoiceNumber,
+  supplierId: Number(formData.supplierId),
+  orderDate: formData.orderDate,
+  status: formData.status,
+  paymentMethod: formData.paymentMethod,
+  notes: formData.notes,
+  paidAmount: Number(formData.paidAmount),
+  totalAmount: parseFloat(calculateTotal().toFixed(2)),
+
+  items: formData.items.map(item => ({
+    productId: Number(item.productId),
+    quantity: Number(item.quantity),
+    unitPrice: Number(item.unitPrice),
+    total: Number(item.total),
+warehouseId: Number(item.warehouseId)
+  }))
+};
 
   try {
     if (id) {
@@ -205,8 +215,10 @@ const handleSubmit = async (e) => {
 
     navigate('/invoices');
   } catch (error) {
-    console.error('Error submitting invoice:', error);
+if (error.response) {
+console.error('Server error messages:', error.response.data?.message);
   }
+  console.error('Error creating invoice:', error);  }
 };
 
 

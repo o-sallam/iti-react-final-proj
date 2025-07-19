@@ -28,10 +28,12 @@ const API_URL = '/purchase-orders';
     return res.data;
   },
 
-  create: async (invoiceData) => {
-    const res = await api.post(API_URL, invoiceData);
-    return res.data;
-  },
+ create: async (invoiceData) => {
+  console.log('🚀 Invoice Data Sent to Backend:', invoiceData); // ✅ هنا
+  const res = await api.post(API_URL, invoiceData);
+  return res.data;
+},
+
 
   update: async (id, invoiceData) => {
     const res = await api.patch(`${API_URL}/${id}`, invoiceData);
