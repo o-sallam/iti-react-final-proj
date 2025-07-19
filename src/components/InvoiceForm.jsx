@@ -20,7 +20,7 @@ const InvoiceFormPage = () => {
     items: [{ description: '', quantity: 0, unitPrice: 0, total: 0 }],
     paidAmount: 0,
     remainingAmount: 0,
-    warehouseId:'',
+    warehouseId:0,
   });
 
   const [suppliers, setSuppliers] = useState([]);
@@ -156,7 +156,7 @@ const loadInvoice = async (invoiceId) => {
       newErrors.supplierId = 'المورد مطلوب';
     }
 
-    if (!formData.invoiceDate) {
+    if (!formData.orderDate) {
       newErrors.invoiceDate = 'تاريخ الفاتورة مطلوب';
     }
 
@@ -189,9 +189,25 @@ const handleSubmit = async (e) => {
 
   const submitData = {
     ...formData,
-    supplierName: selectedSupplier?.name || '',
-    supplierEmail: selectedSupplier?.email || '',
-    totalAmount: parseFloat(calculateTotal().toFixed(2))
+       invoiceNumber: formData.invoiceNumber,
+  supplierId: Number(formData.supplierId),
+  orderDate: formData.orderDate,
+  status: formData.status,
+  paymentMethod: formData.paymentMethod,
+  notes: formData.notes,
+  paidAmount: Number(formData.paidAmount),
+  totalAmount: parseFloat(calculateTotal().toFixed(2)),
+
+  
+  items: formData.items.map(item => ({
+    productId: Number(item.productId),
+    quantity: Number(item.quantity),
+    unitPrice: Number(item.unitPrice),
+    total: Number(item.total),
+    warehouseId: Number(item.warehouseId),
+  }))
+
+
   };
 
   try {
@@ -205,8 +221,10 @@ const handleSubmit = async (e) => {
 
     navigate('/invoices');
   } catch (error) {
-    console.error('Error submitting invoice:', error);
+if (error.response) {
+console.error('Server error messages:', error.response.data?.message);
   }
+  console.error('Error creating invoice:', error);  }
 };
 
 
