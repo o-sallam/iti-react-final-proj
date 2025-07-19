@@ -62,6 +62,15 @@ const inventoryService = {
     } catch {
       throw new Error('Failed to update inventory quantity');
     }
+  },
+
+  getProductsWithStockWarehouse: async () => {
+    try {
+      const response = await api.get('/products/with-stock-warehouse');
+      return response.data;
+    } catch {
+      throw new Error('Failed to fetch products with stock warehouse');
+    }
   }
 };
 

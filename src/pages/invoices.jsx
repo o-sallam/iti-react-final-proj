@@ -6,6 +6,7 @@ import invoicesService from '../services/invoicesService';
 import api from '../api';
 import { Link } from 'react-router-dom';
 
+import clientService from '../services/clientService';
 import InvoiceViewModal from '../components/InvoiceViewModal';
 const Invoices = () => {
   const [invoices, setInvoices] = useState([]);
@@ -17,6 +18,8 @@ const Invoices = () => {
   const [page, setPage] = useState(1);
 const [limit] = useState(10);
 const [totalPages, setTotalPages] = useState(1);
+const [clientBalances, setClientBalances] = useState({});
+const [loadingBalances, setLoadingBalances] = useState(false);
 
 const [selectedInvoice, setSelectedInvoice] = useState(null);
 
@@ -41,6 +44,28 @@ useEffect(() => {
     .catch(console.error);
 }, []);
 
+  // Fetch client balances for all invoices
+  useEffect(() => {
+    const fetchBalances = async () => {
+      if (!invoices || invoices.length === 0) return;
+      setLoadingBalances(true);
+      const balances = {};
+      await Promise.all(invoices.map(async (inv) => {
+        if (inv.clientId && !balances[inv.clientId]) {
+          try {
+            const data = await clientService.getById(inv.clientId);
+            balances[inv.clientId] = typeof data.balance === 'number' ? data.balance : 0;
+          } catch {
+            balances[inv.clientId] = 0;
+          }
+        }
+      }));
+      setClientBalances(balances);
+      setLoadingBalances(false);
+    };
+    fetchBalances();
+  }, [invoices]);
+
 
   const loadInvoices = async () => {
   try {
@@ -62,11 +87,6 @@ useEffect(() => {
   }
 };
 
-
-  const handleAddInvoice = () => {
-    setEditingInvoice(null);
-    setIsModalOpen(true);
-  };
 
   const handleEditInvoice = (invoice) => {
     setEditingInvoice(invoice);
@@ -122,33 +142,13 @@ useEffect(() => {
 
   return (
     <div className="fade-in bg-gray-50 dark:bg-gray-900 min-h-screen">
-      {/* Page Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              إدارة الفواتير
-            </h1>
-            <p className="text-gray-600 dark:text-gray-300">إدارة جميع الفواتير والمدفوعات</p>
-          </div>
-         <Link
-  to="/invoices/new"
-  className="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 dark:bg-brand-400 dark:hover:bg-brand-500"
->
-  <Plus size={20} className="ml-2" />
-  <span>إنشاء فاتورة جديدة</span>
-</Link>
-
-        </div>
-      </div>
-
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
         <div className="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-800">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                إجمالي الفواتير
+                إجمالي المشتريات
               </p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.total}</p>
             </div>
@@ -161,7 +161,7 @@ useEffect(() => {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                الفواتير المدفوعة
+                المشتريات المدفوعة
               </p>
               <p className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.paid}</p>
             </div>
@@ -174,7 +174,7 @@ useEffect(() => {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                الفواتير المعلقة
+                المشتريات المعلقة
               </p>
               <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{stats.pending}</p>
             </div>
@@ -187,7 +187,7 @@ useEffect(() => {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                الفواتير المتأخرة
+                المشتريات المتأخرة
               </p>
               <p className="text-2xl font-bold text-red-600 dark:text-red-400">{stats.overdue}</p>
             </div>
@@ -200,10 +200,10 @@ useEffect(() => {
 
       {/* Search and Filter */}
       <div className="bg-white rounded-xl shadow-sm p-6 mb-6 dark:bg-gray-800 dark:border dark:border-gray-700">
-        <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
           <div className="flex-1 relative">
             <Search
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-300"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-300"
               size={20}
             />
             <input
@@ -227,6 +227,13 @@ useEffect(() => {
               <option value="overdue">متأخر</option>
               <option value="cancelled">ملغي</option>
             </select>
+            <Link
+              to="/invoices/new"
+              className="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 dark:bg-brand-400 dark:hover:bg-brand-500"
+            >
+              <Plus size={20} className="ml-2" />
+              <span>إنشاء فاتورة جديدة</span>
+            </Link>
           </div>
         </div>
       </div>
@@ -246,6 +253,7 @@ useEffect(() => {
                   <th className="px-5 py-3 sm:px-6 text-right text-sm font-medium text-gray-900 dark:text-white">المورد</th>
                   <th className="px-5 py-3 sm:px-6 text-right text-sm font-medium text-gray-900 dark:text-white">التاريخ</th>
                   <th className="px-5 py-3 sm:px-6 text-right text-sm font-medium text-gray-900 dark:text-white">المبلغ</th>
+                  <th className="px-5 py-3 sm:px-6 text-right text-sm font-medium text-gray-900 dark:text-white">السابق</th>
                   <th className="px-5 py-3 sm:px-6 text-right text-sm font-medium text-gray-900 dark:text-white">الحالة</th>
                   <th className="px-5 py-3 sm:px-6 text-right text-sm font-medium text-gray-900 dark:text-white">الإجراءات</th>
                 </tr>
@@ -288,6 +296,15 @@ useEffect(() => {
                           {invoice.totalAmount}
                         </span>
                       </div>
+                    </td>
+                    <td className="px-5 py-4 sm:px-6">
+                      <span className="text-sm text-gray-900 dark:text-white">
+                        {loadingBalances
+                          ? '...'
+                          : (clientBalances[invoice.clientId] !== undefined
+                              ? Number(clientBalances[invoice.clientId]).toFixed(2)
+                              : '0.00')}
+                      </span>
                     </td>
                     <td className="px-5 py-4 sm:px-6">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(invoice.status)} dark:bg-opacity-80`}>

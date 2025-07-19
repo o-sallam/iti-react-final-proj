@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
+import { Outlet } from 'react-router-dom';
 import NavBar from './NavBar';
 import SideBar from './SideBar';
 
-const Layout = ({ children }) => {
+const Layout = () => {
   const [sidebarToggle, setSidebarToggle] = useState(false);
 
   return (
@@ -17,7 +18,7 @@ const Layout = ({ children }) => {
         
         {/* Main Content Area */}
         <main className="flex-1 p-4 lg:p-6">
-          {children}
+          <Outlet />
         </main>
       </div>
     </div>

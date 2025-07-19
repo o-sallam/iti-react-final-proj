@@ -8,13 +8,6 @@ import saleinvoicesService from '../services/saleinvoicesService';
 import { createPortal } from 'react-dom';
 import Modal from '../components/Modal';
 
-const DUMMY_PRODUCTS = [
-  { id: 13, name: 'مفروم [20] 700', price: 165 },
-  { id: 14, name: 'كفتة [10] 500', price: 120 },
-  { id: 15, name: 'برجر [5] 300', price: 90 },
-  { id: 16, name: 'سجق [8] 400', price: 110 },
-];
-
 const initialItems = [];
 
 const AddSaleInvoice = () => {
@@ -25,8 +18,7 @@ const AddSaleInvoice = () => {
   const [warehouses, setWarehouses] = useState([]);
   const [selectedWarehouseId, setSelectedWarehouseId] = useState('');
 
-  const previous = typeof client?.balance === 'number' ? client.balance : 0;
-  const branch = 'المخزن الرئيسي';
+  const previous = client && client.balance ? Number(client.balance) : 0;
 
   const [items, setItems] = useState(initialItems);
   const [paid, setPaid] = useState('');
@@ -35,7 +27,6 @@ const AddSaleInvoice = () => {
   const [inputSearch, setInputSearch] = useState('');
   const [inputQuantity, setInputQuantity] = useState(1);
   const [inputSearchResults, setInputSearchResults] = useState([]);
-  const [searchLoading, setSearchLoading] = useState(false);
   const inputRef = React.useRef();
   const quantityRef = React.useRef();
   const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
@@ -102,14 +93,12 @@ const AddSaleInvoice = () => {
         const data = await warehouseService.getAllWarehouses();
         setWarehouses(data);
         if (data.length > 0) setSelectedWarehouseId(data[0].id);
-      } catch (e) {
+      } catch {
         setWarehouses([]);
       }
     };
     fetchWarehouses();
   }, []);
-
-  const selectedWarehouse = warehouses.find(w => w.id === selectedWarehouseId);
 
   const total = items.reduce((sum, item) => sum + (Number(item.value) || 0), 0);
   const remaining = total + previous - (Number(paid) || 0);
@@ -126,20 +115,18 @@ const AddSaleInvoice = () => {
     const invoiceData = {
       warehouseId: Number(selectedWarehouseId),
       clientId: Number(clientId),
-      paid: Number(paid) || 0,
+      paid: paid && !isNaN(Number(paid)) ? Number(paid) : 0,
       items: items.map(item => ({
         productId: item.productId,
-        productName: item.name,
         quantity: item.quantity,
-        salePrice: item.price,
-        total: item.price * item.quantity
+        salePrice: item.price
       }))
     };
     setSaving(true);
     try {
       await saleinvoicesService.create(invoiceData);
       setShowSuccessModal(true);
-    } catch (err) {
+    } catch {
       alert('حدث خطأ أثناء حفظ الفاتورة');
     } finally {
       setSaving(false);
@@ -163,15 +150,12 @@ const AddSaleInvoice = () => {
       setInputSearchResults([]);
       return;
     }
-    setSearchLoading(true);
     const handler = setTimeout(async () => {
       try {
         const results = await productService.searchProducts(inputSearch, selectedWarehouseId);
         setInputSearchResults(results);
       } catch {
         setInputSearchResults([]);
-      } finally {
-        setSearchLoading(false);
       }
     }, 200);
     return () => clearTimeout(handler);
@@ -303,7 +287,7 @@ const AddSaleInvoice = () => {
               value={paid}
               onChange={e => setPaid(e.target.value)}
             />
-            <div className="bg-gray-100 text-gray-700 rounded-lg px-3 py-2 text-sm">المتبقي عليه: {remaining}</div>
+            <div className="bg-gray-100 text-gray-700 rounded-lg px-3 py-2 text-sm">المتبقي عليه: {remaining.toFixed(2)}</div>
             <button
               className={`mt-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 rounded-lg transition flex items-center justify-center ${saving ? 'opacity-70 cursor-not-allowed' : ''}`}
               onClick={handleSave}

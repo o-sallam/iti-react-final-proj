@@ -38,7 +38,7 @@ const ProductForm = () => {
         sku: product.sku || '',
         isActive: product.isActive,
       });
-    } catch (err) {
+    } catch{
       setError('فشل في تحميل المنتج');
     }
   };
