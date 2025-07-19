@@ -266,288 +266,301 @@ const fetchWarehouses = async () => {
     }
   };
   return (
-    <div className="p-4 max-w-3xl mx-auto  bg-white shadow rounded-md">
-<h2 className="text-lg font-semibold mb-4">
-  {id ? 'تعديل الفاتورة' : 'إنشاء فاتورة شراء'}
-</h2>
-      <form onSubmit={handleSubmit} className="space-y-4 text-xs">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-      <div>
-        <label className="block font-medium text-gray-700 mb-1">رقم الفاتورة *</label>
-        <input
-          type="text"
-          name="invoiceNumber"
-          value={formData.invoiceNumber}
-          onChange={handleChange}
-          className={`w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${
-            errors.invoiceNumber ? 'border-red-500' : 'border-gray-300'
-          }`}
-          placeholder="أدخل رقم الفاتورة"
-        />
-        {errors.invoiceNumber && (
-          <p className="text-red-500  text-xl mt-1">{errors.invoiceNumber}</p>
-        )}
-      </div>
-
-      <div>
-        <label className="block font-medium text-gray-700 mb-1">المورد *</label>
-        <select
-          name="supplierId"
-          value={formData.supplierId}
-          onChange={handleChange}
-          className={`w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${
-            errors.supplierId ? 'border-red-500' : 'border-gray-300'
-          }`}
-        >
-          <option value="">اختر المورد</option>
-          {suppliers.map((supplier) => (
-           <option key={supplier.id} value={supplier.id.toString()}>
-  {supplier.name}
-</option>
-          ))}
-        </select>
-        {errors.supplierId && (
-          <p className="text-red-500 text-s mt-1">{errors.supplierId}</p>
-        )}
-      </div>
-
-      <div>
-        <label className="block font-medium text-gray-700 mb-1">تاريخ الفاتورة *</label>
-        <input
-          type="date"
-          name="invoiceDate"
-          value={formData.invoiceDate}
-          onChange={handleChange}
-          className={`w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${
-            errors.invoiceDate ? 'border-red-500' : 'border-gray-300'
-          }`}
-          placeholder="أدخل تاريخ الفاتورة"
-        />
-        {errors.invoiceDate && (
-          <p className="text-red-500 text-xs mt-1">{errors.invoiceDate}</p>
-        )}
-      </div>
-
-      <div>
-        <label className="block font-medium text-gray-700 mb-1">الحالة</label>
-        <select
-          name="status"
-          value={formData.status}
-          onChange={handleChange}
-          className="w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-        >
-          <option value="pending">معلق</option>
-          <option value="paid">مدفوع</option>
-          <option value="overdue">متأخر</option>
-          <option value="cancelled">ملغي</option>
-        </select>
-      </div>
-
-      <div>
-        <label className="block font-medium text-gray-700 mb-1">طريقة الدفع</label>
-        <select
-          name="paymentMethod"
-          value={formData.paymentMethod}
-          onChange={handleChange}
-          className="w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-        >
-          <option value="cash">نقدي</option>
-          <option value="card">بطاقة</option>
-          <option value="transfer">تحويل بنكي</option>
-          <option value="check">شيك</option>
-        </select>
-      </div>
-<div>
-  <label className="block font-medium text-gray-700 mb-1">المخزن *</label>
-  <select
-    id="warehouseId"
-    name="warehouseId"
-    value={formData.warehouseId}
-    onChange={handleChange}
-    className={`w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${
-      errors.warehouseId ? 'border-red-300' : 'border-gray-300'
-    }`}
-    disabled={isEdit}
-  >
-    <option value="">اختر المخزن</option>
-    {warehouses.map((warehouse) => (
-      <option key={warehouse.id} value={warehouse.id}>
-        {warehouse.name} - {warehouse.location}
-      </option>
-    ))}
-  </select>
-
-  {errors.warehouseId && (
-    <p className="text-red-500 text-sm mt-1">{errors.warehouseId}</p>
-  )}
-
-  {isEdit && (
-    <p className="text-gray-500 text-sm mt-1">
-      لا يمكن تغيير المخزن للمنتجات الموجودة
-    </p>
-  )}
-</div>
-
-    </div>
-
-    {/* البنود */}
-    <div>
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="text-sm font-medium text-gray-900">بنود الفاتورة</h3>
+    <div className="p-4 max-w-6xl mx-auto bg-white rounded-lg shadow">
+      <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-bold text-gray-800">
+          {id ? 'تعديل الفاتورة' : 'إنشاء فاتورة شراء'}
+        </h2>
         <button
-          type="button"
-          onClick={addItem}
-          className="inline-flex items-center gap-2 px-3 py-2 text-xs font-medium text-white transition rounded-lg bg-green-500 shadow-theme-xs hover:bg-green-600"
+          onClick={() => navigate('/invoices')}
+          className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
         >
-          <Plus size={16} className="" />
-          إضافة بند
+          <X size={16} />
+          رجوع
         </button>
       </div>
-
-      <div className="space-y-3">
-        {formData.items?.map((item, index) => (
-          <div key={index} className="grid grid-cols-1 md:grid-cols-5 gap-2 p-2 border rounded-md">
-            <div className="md:col-span-2 relative">
-  <label className="block mb-1">المنتج *</label>
-  <input
-    type="text"
-    value={item.description}
-    onChange={(e) => handleProductSearch(index, e.target.value)}
-    className={`w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${
-      errors[`item_${index}_description`] ? 'border-red-500' : 'border-gray-300'
-    }`}
-    placeholder="ابحث عن المنتج"
-  />
-  {productSuggestions.length > 0 && (
-    <ul className="absolute z-10 bg-white border border-gray-300 rounded mt-1 w-full max-h-40 overflow-y-auto shadow-lg">
-      {productSuggestions.map((product) => (
-        <li
-          key={product.id}
-          onClick={() => handleSelectProduct(index, product)}
-          className="px-3 py-2 cursor-pointer hover:bg-gray-100"
-        >
-          {product.name}
-        </li>
-      ))}
-    </ul>
-  )}
-</div>
-
-
-            <div>
-              <label className="block mb-1">الكمية *</label>
-              <input
-                type="number"
-                value={item.quantity}
-                onChange={(e) => handleItemChange(index, 'quantity', parseFloat(e.target.value) || 0)}
-                className={`w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${
-                  errors[`item_${index}_quantity`] ? 'border-red-500' : 'border-gray-300'
-                }`}
-                min="1"
-                placeholder="أدخل الكمية"
-              />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Right Column - Invoice Items */}
+        <div className="lg:col-span-2 space-y-4">
+          <div className="bg-white p-4 rounded-lg border border-gray-200">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-medium text-gray-900">بنود الفاتورة</h3>
+              <button
+                type="button"
+                onClick={addItem}
+                className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-white bg-blue-600 rounded hover:bg-blue-700"
+              >
+                <Plus size={14} />
+                إضافة منتج
+              </button>
             </div>
 
-            <div>
-              <label className="block mb-1">سعر الوحدة *</label>
-              <input
-  type="number"
-  value={item.unitPrice}
-  onChange={(e) => handleItemChange(index, 'unitPrice', parseFloat(e.target.value) || 0)}
-  className={`w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 ${
-    errors[`item_${index}_unitPrice`] ? 'border-red-500' : 'border-gray-300'
-  }`}
-  min="0"
-  step="0.01"
-  placeholder="أدخل سعر الوحدة"
-/>
+            <div className="space-y-3">
+              {formData.items?.map((item, index) => (
+                <div key={index} className="grid grid-cols-12 gap-2 items-end p-2 border rounded-md">
+                  <div className="col-span-5 relative">
+                    <label className="block text-xs text-gray-500 mb-1">المنتج</label>
+                    <input
+                      type="text"
+                      value={item.description}
+                      onChange={(e) => handleProductSearch(index, e.target.value)}
+                      className={`w-full px-2 py-1 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+                        errors[`item_${index}_description`] ? 'border-red-500' : 'border-gray-300'
+                      }`}
+                      placeholder="ابحث عن المنتج"
+                    />
+                    {productSuggestions.length > 0 && (
+                      <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto">
+                        {productSuggestions.map((product) => (
+                          <li
+                            key={product.id}
+                            onClick={() => handleSelectProduct(index, product)}
+                            className="px-3 py-2 text-sm cursor-pointer hover:bg-gray-100"
+                          >
+                            {product.name}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
 
-            </div>
+                  <div className="col-span-2">
+                    <label className="block text-xs text-gray-500 mb-1">الكمية</label>
+                    <input
+                      type="number"
+                      value={item.quantity}
+                      onChange={(e) => handleItemChange(index, 'quantity', parseFloat(e.target.value) || 0)}
+                      className={`w-full px-2 py-1 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+                        errors[`item_${index}_quantity`] ? 'border-red-500' : 'border-gray-300'
+                      }`}
+                      min="1"
+                    />
+                  </div>
 
-            <div className="flex items-end gap-1">
-              <input
-                type="text"
-                value={`₪${(item.total || 0).toFixed(2)}`}
-                readOnly
-                className="w-full px-2 py-1 border bg-gray-100 rounded-md text-gray-600"
-              />
-              {formData.items.length > 1 && (
-                <button
-                  type="button"
-                  onClick={() => removeItem(index)}
-                  className="inline-flex items-center gap-2 px-2 py-2 text-sm font-medium text-white transition rounded-lg bg-red-500 shadow-theme-xs hover:bg-red-600"
-                >
-                  <Trash2 size={11} />
-                </button>
-              )}
+                  <div className="col-span-2">
+                    <label className="block text-xs text-gray-500 mb-1">سعر الوحدة</label>
+                    <input
+                      type="number"
+                      value={item.unitPrice}
+                      onChange={(e) => handleItemChange(index, 'unitPrice', parseFloat(e.target.value) || 0)}
+                      className={`w-full px-2 py-1 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+                        errors[`item_${index}_unitPrice`] ? 'border-red-500' : 'border-gray-300'
+                      }`}
+                      min="0"
+                      step="0.01"
+                    />
+                  </div>
+
+                  <div className="col-span-2">
+                    <label className="block text-xs text-gray-500 mb-1">الإجمالي</label>
+                    <div className="flex items-center">
+                      <input
+                        type="text"
+                        value={`${(item.total || 0).toFixed(2)} ج.م`}
+                        readOnly
+                        className="w-full px-2 py-1 text-sm text-right bg-gray-50 border border-gray-300 rounded"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-span-1 flex justify-end">
+                    {formData.items.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeItem(index)}
+                        className="p-1 text-red-500 hover:text-red-700"
+                        title="حذف"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+
+              {/* Totals */}
+              <div className="mt-4 space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>المجموع:</span>
+                  <span className="font-medium">{(calculateTotal() || 0).toFixed(2)} ج.م</span>
+                </div>
+                
+                <div className="flex justify-between text-sm">
+                  <span>المدفوع:</span>
+                  <input
+                    type="number"
+                    value={formData.paidAmount}
+                    onChange={(e) =>
+                      setFormData({ ...formData, paidAmount: parseFloat(e.target.value) || 0 })
+                    }
+                    className="w-32 px-2 py-1 text-sm text-right border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    placeholder="0.00"
+                  />
+                </div>
+                
+                <div className="flex justify-between text-sm">
+                  <span>المتبقي:</span>
+                  <span className="font-medium">{formData.remainingAmount.toFixed(2)} ج.م</span>
+                </div>
+              </div>
             </div>
           </div>
-        ))}
-      </div>
-    </div>
-
-    {/* المدفوع والمتبقي */}
-    <div className="grid grid-cols-1 gap-2">
-      <div>
-        <label className="block mb-1">المبلغ المدفوع</label>
-        <input
-          type="number"
-          value={formData.paidAmount}
-          onChange={(e) =>
-            setFormData({ ...formData, paidAmount: parseFloat(e.target.value) || 0 })
-          }
-          className="w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-          placeholder="أدخل المبلغ المدفوع"
-        />
-      </div>
-
-      <div>
-        <label className="block mb-1">المبلغ المتبقي</label>
-        <input
-          type="number"
-          value={formData.remainingAmount}
-          readOnly
-          className="w-full px-2 py-1 border bg-gray-100 rounded-md text-gray-600"
-          placeholder="المبلغ المتبقي"
-        />
-      </div>
-    </div>
-
-    {/* المجموع */}
-    <div className="p-2 bg-gray-50 rounded-md text-xs font-semibold flex justify-between">
-      <span>المجموع الكلي:</span>
-      <span>₪{(calculateTotal() || 0).toFixed(2)}</span>
-    </div>
-
-    {/* الملاحظات */}
-    <div>
-      <label className="block font-medium text-gray-700 mb-1">ملاحظات</label>
-      <textarea
-        name="notes"
-        value={formData.notes}
-        onChange={handleChange}
-        rows={2}
-        className="w-full px-2 py-1 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-        placeholder="أدخل ملاحظات إضافية"
-      />
-    </div>
-        {/* ... */}
-        
-        <div className="flex justify-end gap-2">
-          <button
-            type="button"
-            onClick={() => navigate('/invoices')}
-            className="inline-flex items-center gap-2 px-2 py-1 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
-          >
-            <X size={14} /> إلغاء
-          </button>
-          <button
-            type="submit"
-            className="inline-flex items-center gap-2 px-2 py-1 text-sm font-medium text-white bg-brand-500 rounded-md hover:bg-brand-600"
-          >
-            <Save size={14} /> حفظ
-          </button>
         </div>
+
+        {/* Left Column - Form Fields */}
+        <div className="space-y-4">
+          <div className="bg-gray-100 p-4 rounded-lg border border-gray-200">
+            <h3 className="text-sm font-medium text-gray-900 mb-4">معلومات الفاتورة</h3>
+            
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">رقم الفاتورة</label>
+                <input
+                  type="text"
+                  name="invoiceNumber"
+                  value={formData.invoiceNumber}
+                  onChange={handleChange}
+                  className={`w-full px-2 py-1 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+                    errors.invoiceNumber ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder="رقم الفاتورة"
+                />
+                {errors.invoiceNumber && (
+                  <p className="text-xs text-red-500 mt-1">{errors.invoiceNumber}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">المورد</label>
+                <select
+                  name="supplierId"
+                  value={formData.supplierId}
+                  onChange={handleChange}
+                  className={`w-full px-2 py-1 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+                    errors.supplierId ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                >
+                  <option value="">اختر المورد</option>
+                  {suppliers.map((supplier) => (
+                    <option key={supplier.id} value={supplier.id.toString()}>
+                      {supplier.name}
+                    </option>
+                  ))}
+                </select>
+                {errors.supplierId && (
+                  <p className="text-xs text-red-500 mt-1">{errors.supplierId}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">تاريخ الفاتورة</label>
+                <input
+                  type="date"
+                  name="invoiceDate"
+                  value={formData.invoiceDate}
+                  onChange={handleChange}
+                  className={`w-full px-2 py-1 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+                    errors.invoiceDate ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                />
+                {errors.invoiceDate && (
+                  <p className="text-xs text-red-500 mt-1">{errors.invoiceDate}</p>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">الحالة</label>
+                  <select
+                    name="status"
+                    value={formData.status}
+                    onChange={handleChange}
+                    className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  >
+                    <option value="pending">معلق</option>
+                    <option value="paid">مدفوع</option>
+                    <option value="overdue">متأخر</option>
+                    <option value="cancelled">ملغي</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">طريقة الدفع</label>
+                  <select
+                    name="paymentMethod"
+                    value={formData.paymentMethod}
+                    onChange={handleChange}
+                    className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  >
+                    <option value="cash">نقدي</option>
+                    <option value="card">بطاقة</option>
+                    <option value="transfer">تحويل بنكي</option>
+                    <option value="check">شيك</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">المخزن</label>
+                <select
+                  id="warehouseId"
+                  name="warehouseId"
+                  value={formData.warehouseId}
+                  onChange={handleChange}
+                  className={`w-full px-2 py-1 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+                    errors.warehouseId ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  disabled={isEdit}
+                >
+                  <option value="">اختر المخزن</option>
+                  {warehouses.map((warehouse) => (
+                    <option key={warehouse.id} value={warehouse.id}>
+                      {warehouse.name}
+                    </option>
+                  ))}
+                </select>
+                {errors.warehouseId && (
+                  <p className="text-xs text-red-500 mt-1">{errors.warehouseId}</p>
+                )}
+                {isEdit && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    لا يمكن تغيير المخزن للمنتجات الموجودة
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">ملاحظات</label>
+                <textarea
+                  name="notes"
+                  value={formData.notes}
+                  onChange={handleChange}
+                  rows="2"
+                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  placeholder="ملاحظات إضافية"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end space-x-2 mt-4">
+            <button
+              type="button"
+              onClick={() => navigate('/invoices')}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+            >
+              إلغاء
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              حفظ الفاتورة
+            </button>
+          </div>
+        </div>
+      </div>
       </form>
     </div>
   );

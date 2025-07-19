@@ -178,20 +178,11 @@ const Suppliers = () => {
                 </div>
                 <div className="flex items-center space-x-3 rtl:space-x-reverse text-sm text-gray-600 dark:text-gray-400">
                   <Wallet size={16} className="text-gray-400 dark:text-gray-500" />
-                  <span>{supplier.accountBalance} EGP</span>
+                  <span>{supplier.accountBalance} ج.م</span>
                 </div>
               </div>
 
-              <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500 dark:text-gray-400">إجمالي الأوامر:</span>
-                  <span className="font-medium text-gray-900 dark:text-gray-100">{supplier.totalOrders || 0}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm mt-1">
-                  <span className="text-gray-500 dark:text-gray-400">آخر طلب:</span>
-                  <span className="font-medium text-gray-900 dark:text-gray-100">{supplier.lastOrderDate || 'لا يوجد'}</span>
-                </div>
-              </div>
+              
             </div>
           ))}
         </div>

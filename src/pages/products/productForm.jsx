@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { ArrowLeft, Save, Package } from 'lucide-react';
 import productService from '../../services/productService';
-import warehouseService from '../../services/warehouseService';
-import inventoryService from '../../services/inventoryService';
 
 const ProductForm = () => {
   const navigate = useNavigate();
@@ -13,33 +11,21 @@ const ProductForm = () => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    price: '',
-   // sku: '',
+    purchase_price: '',
+    sale_price: '',
+    sku: '',
     isActive: true,
-    stock: '',
-    warehouseId: ''
   });
 
-  const [warehouses, setWarehouses] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    fetchWarehouses();
     if (isEdit) {
       fetchProduct();
     }
   }, [id, isEdit]);
-
-  const fetchWarehouses = async () => {
-    try {
-      const data = await warehouseService.getAllWarehouses();
-      setWarehouses(data);
-    } catch (err) {
-      setError('فشل في تحميل المخازن');
-    }
-  };
 
   const fetchProduct = async () => {
     try {
@@ -47,11 +33,10 @@ const ProductForm = () => {
       setFormData({
         name: product.name || '',
         description: product.description || '',
-        price: product.price || '',
-       // sku: product.sku || '',
+        purchase_price: product.purchase_price?.toString() || '',
+        sale_price: product.sale_price?.toString() || '',
+        sku: product.sku || '',
         isActive: product.isActive,
-        stock: product.stock || '',
-        warehouseId: product.inventory?.warehouseId || ''
       });
     } catch (err) {
       setError('فشل في تحميل المنتج');
@@ -65,22 +50,12 @@ const ProductForm = () => {
       newErrors.name = 'اسم المنتج مطلوب';
     }
 
-   /* if (!formData.sku.trim()) {
-      newErrors.sku = 'رمز المنتج مطلوب';
-    }*/
-
     if (!formData.purchase_price || parseFloat(formData.purchase_price) <= 0) {
       newErrors.purchase_price = 'السعر يجب أن يكون أكبر من 0';
     }
- if (!formData.sale_price || parseFloat(formData.sale_price) < 0) {
-      newErrors.sale_price = 'السعر يجب أن يكون أكبر من او يساوي  0';
-    }
-    if (!formData.stock || parseInt(formData.stock) < 0) {
-      newErrors.stock = 'المخزون يجب أن يكون 0 أو أكثر';
-    }
 
-    if (!formData.warehouseId) {
-      newErrors.warehouseId = 'اختيار المخزن مطلوب';
+    if (!formData.sale_price || parseFloat(formData.sale_price) < 0) {
+      newErrors.sale_price = 'السعر يجب أن يكون أكبر من أو يساوي 0';
     }
 
     setErrors(newErrors);
@@ -89,10 +64,8 @@ const ProductForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
+
+    if (!validateForm()) return;
 
     setLoading(true);
     setError(null);
@@ -102,30 +75,20 @@ const ProductForm = () => {
         name: formData.name,
         description: formData.description,
         purchase_price: parseFloat(formData.purchase_price),
-                sale_price: parseFloat(formData.sale_price),
-
+        sale_price: parseFloat(formData.sale_price),
         sku: formData.sku,
         isActive: formData.isActive,
-        stock: parseInt(formData.stock)
       };
 
-      let product;
       if (isEdit) {
-        product = await productService.updateProduct(id, productData);
+        await productService.updateProduct(id, productData);
       } else {
-        product = await productService.createProduct(productData);
-        
-        // Create inventory record for new product
-        await inventoryService.createInventory({
-          quantity: parseInt(formData.stock),
-          productId: product.id,
-          warehouseId: formData.warehouseId
-        });
+        await productService.createProduct(productData);
       }
 
       navigate('/products');
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'فشل في حفظ المنتج');
     } finally {
       setLoading(false);
     }
@@ -133,14 +96,13 @@ const ProductForm = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : value,
     }));
-    
-    // Clear error when user starts typing
+
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({ ...prev, [name]: '' }));
     }
   };
 
@@ -246,52 +208,7 @@ const ProductForm = () => {
               {errors.price && <p className="mt-1 text-sm text-red-600">{errors.price}</p>}
             </div>
 
-            <div>
-              <label htmlFor="stock" className="block text-sm font-medium text-gray-700 mb-2">
-                كمية المخزون *
-              </label>
-              <input
-                type="number"
-                id="stock"
-                name="stock"
-                value={formData.stock}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors.stock ? 'border-red-300' : 'border-gray-300'
-                }`}
-                placeholder="0"
-              />
-              {errors.stock && <p className="mt-1 text-sm text-red-600">{errors.stock}</p>}
-            </div>
-
-            <div>
-              <label htmlFor="warehouseId" className="block text-sm font-medium text-gray-700 mb-2">
-                المخزن *
-              </label>
-              <select
-                id="warehouseId"
-                name="warehouseId"
-                value={formData.warehouseId}
-                onChange={handleChange}
-                className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors.warehouseId ? 'border-red-300' : 'border-gray-300'
-                }`}
-                disabled={isEdit}
-              >
-                <option value="">اختر المخزن</option>
-                {warehouses.map((warehouse) => (
-                  <option key={warehouse.id} value={warehouse.id}>
-                    {warehouse.name} - {warehouse.location}
-                  </option>
-                ))}
-              </select>
-              {errors.warehouseId && <p className="mt-1 text-sm text-red-600">{errors.warehouseId}</p>}
-              {isEdit && (
-                <p className="mt-1 text-sm text-gray-500">
-                  لا يمكن تغيير المخزن للمنتجات الموجودة
-                </p>
-              )}
-            </div>
+            
           </div>
 
           <div>
