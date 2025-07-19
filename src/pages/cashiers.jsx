@@ -3,6 +3,7 @@ import cashierService from '../services/cashierService';
 import { Edit, User, Lock, Archive, Plus, X } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import NotAuthorized from './NotAuthorized';
+import Modal from '../components/Modal';
 
 const Cashiers = () => {
   const { user } = useAuth();
@@ -15,6 +16,7 @@ const Cashiers = () => {
   const [form, setForm] = useState({ username: '', password: '' });
   const [formLoading, setFormLoading] = useState(false);
   const [formError, setFormError] = useState('');
+  const [modalMessage, setModalMessage] = useState('');
 
   if (notAuthorized) {
     return <NotAuthorized />;
@@ -38,7 +40,7 @@ const Cashiers = () => {
   };
 
   const handleEditPassword = (cashier) => {
-    alert(`تعديل كلمة المرور للكاشير: ${cashier.username}`);
+    setModalMessage(`تعديل كلمة المرور للكاشير: ${cashier.username}`);
   };
 
   const handleOpenModal = () => {
@@ -163,6 +165,19 @@ const Cashiers = () => {
           </div>
         </div>
       )}
+
+      {/* Modal for edit password alert */}
+      <Modal isOpen={!!modalMessage} onClose={() => setModalMessage('')} title="تنبيه">
+        <div className="text-center">
+          <div className="text-lg text-blue-600 mb-2">{modalMessage}</div>
+          <button
+            className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
+            onClick={() => setModalMessage('')}
+          >
+            موافق
+          </button>
+        </div>
+      </Modal>
 
       {cashiers.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

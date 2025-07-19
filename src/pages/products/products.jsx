@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Plus, Edit, Trash2, Package } from 'lucide-react';
 import productService from '../../services/productService';
+import Modal from '../../components/Modal';
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -9,6 +10,7 @@ const ProductList = () => {
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredProducts, setFilteredProducts] = useState([]);
+  const [confirmDelete, setConfirmDelete] = useState({ open: false, id: null });
 
   useEffect(() => {
     fetchProducts();
@@ -40,13 +42,16 @@ const ProductList = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('هل أنت متأكد من حذف هذا المنتج؟')) {
-      try {
-        await productService.deleteProduct(id);
-        fetchProducts();
-      } catch (err) {
-        setError(err.message);
-      }
+    setConfirmDelete({ open: true, id });
+  };
+  const confirmDeleteProduct = async () => {
+    try {
+      await productService.deleteProduct(confirmDelete.id);
+      fetchProducts();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setConfirmDelete({ open: false, id: null });
     }
   };
 
@@ -178,6 +183,25 @@ const ProductList = () => {
           )}
         </div>
       </div>
+
+      {/* Confirm Delete Modal */}
+      <Modal isOpen={confirmDelete.open} onClose={() => setConfirmDelete({ open: false, id: null })} title="تأكيد الحذف">
+        <div className="text-center">
+          <div className="text-lg text-red-600 mb-2">هل أنت متأكد من حذف هذا المنتج؟</div>
+          <button
+            className="mt-6 px-6 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition mr-2"
+            onClick={confirmDeleteProduct}
+          >
+            نعم، حذف
+          </button>
+          <button
+            className="mt-6 px-6 py-2 bg-gray-300 text-gray-800 rounded-lg font-semibold hover:bg-gray-400 transition"
+            onClick={() => setConfirmDelete({ open: false, id: null })}
+          >
+            إلغاء
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 };

@@ -33,7 +33,7 @@ const SideBar = ({ sidebarToggle }) => {
       id: "selling",
       title: "المبيعات",
       icon: (
-       <svg
+        <svg
           width="24"
           height="24"
           viewBox="0 0 24 24"
@@ -51,7 +51,7 @@ const SideBar = ({ sidebarToggle }) => {
       link: "/selling",
       hasDropdown: false,
     },
-    {
+        {
       id: "Invoices",
       title: "المشتريات",
       icon: (
@@ -73,7 +73,7 @@ const SideBar = ({ sidebarToggle }) => {
       link: "/invoices",
       hasDropdown: false,
     },
-    {
+ {
       id: "prpducts",
       title: "المنتجات",
       icon: (
@@ -95,7 +95,7 @@ const SideBar = ({ sidebarToggle }) => {
       link: "/products",
       hasDropdown: false,
     },
-    {
+     {
       id: "inventory",
       title: "المخزون",
       icon: (
@@ -429,7 +429,7 @@ const SideBar = ({ sidebarToggle }) => {
                         ? "menu-item-active"
                         : "menu-item-inactive"
                     }`}
-                    onClick={() => {}}
+                                         onClick={() => {}}
                   >
                     <svg
                       className={
@@ -508,4 +508,4 @@ const SideBar = ({ sidebarToggle }) => {
   );
 };
 
-export default SideBar;
+export default SideBar; 

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import cashierService from '../services/cashierService';
+import UserInfoCard from './UserInfoCard';
 
 const NavBar = ({ sidebarToggle, setSidebarToggle }) => {
   const [menuToggle, setMenuToggle] = useState(false);
@@ -9,6 +11,21 @@ const NavBar = ({ sidebarToggle, setSidebarToggle }) => {
   const [notifying, setNotifying] = useState(true);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const { user, logout } = useAuth();
+  const [drawer, setDrawer] = React.useState(null);
+
+  React.useEffect(() => {
+    const fetchDrawer = async () => {
+      if (user) {
+        try {
+          const data = await cashierService.getDrawer();
+          setDrawer(data.drawer);
+        } catch {
+          setDrawer(null);
+        }
+      }
+    };
+    fetchDrawer();
+  }, [user]);
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -348,14 +365,7 @@ const NavBar = ({ sidebarToggle, setSidebarToggle }) => {
               </button>
               {userDropdownOpen && (
                 <div className="shadow-theme-lg dark:bg-gray-dark absolute left-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 z-50 dark:border-gray-800">
-                  <div>
-                    <span className="text-theme-sm block font-medium text-gray-700 dark:text-gray-400">
-                      {user?.username || 'مستخدم'}
-                    </span>
-                    <span className="text-theme-xs mt-0.5 block text-gray-500 dark:text-gray-400">
-                      {user?.role === 'admin' ? 'مشرف النظام' : user?.role || 'مستخدم'}
-                    </span>
-                  </div>
+                  <UserInfoCard user={user} drawer={drawer} />
                   <ul className="flex flex-col gap-1 border-b border-gray-200 pt-4 pb-3 dark:border-gray-800">
                     <li>
                       <a href="#" className="group text-theme-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300">

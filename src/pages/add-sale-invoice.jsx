@@ -36,6 +36,7 @@ const AddSaleInvoice = () => {
   const [pendingRow, setPendingRow] = useState(null);
   const [saving, setSaving] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [errorModal, setErrorModal] = useState('');
 
   // Position dropdown when inputSearchResults changes
   useEffect(() => {
@@ -109,7 +110,7 @@ const AddSaleInvoice = () => {
 
   const handleSave = async () => {
     if (!selectedWarehouseId || !clientId || items.length === 0) {
-      alert('يرجى اختيار العميل والمخزن وإضافة أصناف للفاتورة');
+      setErrorModal('يرجى اختيار العميل والمخزن وإضافة أصناف للفاتورة');
       return;
     }
     const invoiceData = {
@@ -127,7 +128,7 @@ const AddSaleInvoice = () => {
       await saleinvoicesService.create(invoiceData);
       setShowSuccessModal(true);
     } catch {
-      alert('حدث خطأ أثناء حفظ الفاتورة');
+      setErrorModal('حدث خطأ أثناء حفظ الفاتورة');
     } finally {
       setSaving(false);
     }
@@ -472,6 +473,18 @@ const AddSaleInvoice = () => {
           <button
             className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
             onClick={handleSuccessModalClose}
+          >
+            موافق
+          </button>
+        </div>
+      </Modal>
+      {/* Error Modal */}
+      <Modal isOpen={!!errorModal} onClose={() => setErrorModal('')} title="خطأ">
+        <div className="text-center">
+          <div className="text-lg text-red-600 mb-2">{errorModal}</div>
+          <button
+            className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition"
+            onClick={() => setErrorModal('')}
           >
             موافق
           </button>

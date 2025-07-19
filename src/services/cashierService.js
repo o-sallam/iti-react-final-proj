@@ -9,6 +9,13 @@ const cashierService = {
     const res = await api.post('/auth/register', cashierData);
     return res.data;
   },
+  getDrawer: async () => {
+    const token = localStorage.getItem('token');
+    const res = await api.get('/auth/drawer', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data;
+  },
 };
 
 export default cashierService; 

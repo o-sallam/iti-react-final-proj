@@ -14,7 +14,10 @@ const saleinvoicesService = {
   },
 
   create: async (invoiceData) => {
-    const res = await api.post(`${API_URL}`, invoiceData);
+    const token = localStorage.getItem('token');
+    const res = await api.post(`${API_URL}`, invoiceData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     return res.data;
   },
 };
