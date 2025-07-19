@@ -59,7 +59,6 @@ const loadInvoice = async (invoiceId) => {
       notes: data.notes || '',
       items: data.items,
       paidAmount: data.paidAmount,
-      remainingAmount: data.remainingAmount,
     });
   } catch (error) {
     console.error('خطأ في تحميل الفاتورة:', error);
