@@ -55,12 +55,12 @@ const WarehouseList = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" dir="rtl">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-gray-50 dark:bg-gray-900 min-h-screen" dir="rtl">
       <div className="mb-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center">
             <Warehouse className="h-8 w-8 text-blue-600 ml-3" />
-            <h1 className="text-3xl font-bold text-gray-900">المخازن</h1>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">المخازن</h1>
           </div>
           <Link
             to="/warehouses/new"
@@ -73,30 +73,32 @@ const WarehouseList = () => {
       </div>
 
       {error && (
-        <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4">
-          <p className="text-red-600">{error}</p>
+        <div className="mb-6 bg-red-50 border border-red-200 rounded-md p-4 dark:bg-red-950 dark:border-red-900">
+          <p className="text-red-600 dark:text-red-400">{error}</p>
         </div>
       )}
 
       {/* البحث والتصفية */}
-      <div className="mb-6 flex flex-col sm:flex-row items-center gap-4">
-        <input
-          type="text"
-          placeholder="ابحث باسم المخزن..."
-          className="w-full sm:w-1/2 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <select
-          className="w-full sm:w-1/3 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          value={locationFilter}
-          onChange={(e) => setLocationFilter(e.target.value)}
-        >
-          <option value="">كل المواقع</option>
-          {uniqueLocations.map((loc, index) => (
-            <option key={index} value={loc}>{loc}</option>
-          ))}
-        </select>
+      <div className="mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col sm:flex-row gap-4 border border-gray-200 dark:border-gray-700">
+          <input
+            type="text"
+            placeholder="ابحث باسم المخزن..."
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border-gray-300 dark:border-gray-700 placeholder-gray-400 dark:placeholder-gray-500"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <select
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-white border-gray-300 dark:border-gray-700"
+            value={locationFilter}
+            onChange={(e) => setLocationFilter(e.target.value)}
+          >
+            <option value="">كل المواقع</option>
+            {uniqueLocations.map((loc, index) => (
+              <option key={index} value={loc}>{loc}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* عرض الكروت */}
@@ -105,32 +107,32 @@ const WarehouseList = () => {
           {filteredWarehouses.map((warehouse) => (
             <div
               key={warehouse.id}
-              className="bg-white border border-gray-200 rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow"
+              className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow"
             >
               <div className="flex items-center mb-4">
                 <Warehouse className="h-6 w-6 text-blue-500 ml-2" />
-                <h2 className="text-lg font-semibold text-gray-800">{warehouse.name}</h2>
+                <h2 className="text-lg font-semibold text-gray-800 dark:text-white">{warehouse.name}</h2>
               </div>
-              <div className="flex items-center text-sm text-gray-600 mb-2">
-                <MapPin className="h-4 w-4 text-gray-400 ml-2" />
+              <div className="flex items-center text-sm text-gray-600 dark:text-gray-300 mb-2">
+                <MapPin className="h-4 w-4 text-gray-400 dark:text-gray-500 ml-2" />
                 <span>{warehouse.location}</span>
               </div>
-              <div className="text-sm text-gray-700 mb-1">
+              <div className="text-sm text-gray-700 dark:text-gray-200 mb-1">
                 <span className="font-medium">عدد العناصر:</span> {warehouse.inventories?.length || 0}
               </div>
-              <div className="text-sm text-gray-700 mb-4">
+              <div className="text-sm text-gray-700 dark:text-gray-200 mb-4">
                 <span className="font-medium">تاريخ الإنشاء:</span> {new Date(warehouse.createdAt).toLocaleDateString()}
               </div>
               <div className="flex justify-end space-x-reverse space-x-2">
                 <Link
                   to={`/warehouses/edit/${warehouse.id}`}
-                  className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50 transition-colors"
+                  className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 p-1 rounded hover:bg-blue-50 dark:hover:bg-white/5 transition-colors"
                 >
                   <Edit className="h-5 w-5" />
                 </Link>
                 <button
                   onClick={() => handleDelete(warehouse.id)}
-                  className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 transition-colors"
+                  className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 p-1 rounded hover:bg-red-50 dark:hover:bg-white/5 transition-colors"
                 >
                   <Trash2 className="h-5 w-5" />
                 </button>
@@ -140,9 +142,9 @@ const WarehouseList = () => {
         </div>
       ) : (
         <div className="text-center py-12">
-          <Warehouse className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-4 text-lg font-medium text-gray-900">لا توجد مخازن مطابقة</h3>
-          <p className="mt-2 text-gray-500">حاول تعديل البحث أو التصفية</p>
+          <Warehouse className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-600" />
+          <h3 className="mt-4 text-lg font-medium text-gray-900 dark:text-white">لا توجد مخازن مطابقة</h3>
+          <p className="mt-2 text-gray-500 dark:text-gray-400">حاول تعديل البحث أو التصفية</p>
         </div>
       )}
     </div>

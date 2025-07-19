@@ -5,7 +5,12 @@ import PurchaseOrders from "./pages/purchaseOrders";
 import Invoices from "./pages/invoices";
 import Layout from "./components/Layout";
 import Selling from "./pages/selling";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import ProductList from "./pages/products/products";
 import ProductForm from "./pages/products/productForm";
 import WarehouseList from "./pages/warehouses/warehouses";
@@ -19,45 +24,57 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Cashiers from "./pages/cashiers";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
     <Router>
       <AuthProvider>
-      <Routes>
+        <Routes>
           {/* Auth routes - outside Layout */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-          
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+
           {/* Protected routes - inside Layout */}
-          <Route path="/" element={
-            <ProtectedRoute>
-              <Layout />
-            </ProtectedRoute>
-          }>
-            <Route index element={
-              <div className="p-6">
-                <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
-                <p>Welcome to your dashboard!</p>
-              </div>
-            } />
-          <Route path="/suppliers" element={<Suppliers />} />
-          <Route path="/purchase-orders" element={<PurchaseOrders />} />
-          <Route path="/invoices" element={<Invoices />} />
-          <Route path="/invoices/new" element={<InvoiceForm />} />
-          <Route path="/invoices/edit/:id" element={<InvoiceForm />} />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Layout />
+              </ProtectedRoute>
+            }
+          >
+            <Route
+              index
+              element={
+                <div className="p-6">
+                  <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
+                  <p>Welcome to your dashboard!</p>
+                </div>
+              }
+            />
+            <Route path="/suppliers" element={<Suppliers />} />
+            <Route path="/purchase-orders" element={<PurchaseOrders />} />
+            <Route path="/invoices" element={<Invoices />} />
+            <Route path="/invoices/new" element={<InvoiceForm />} />
+            <Route path="/invoices/edit/:id" element={<InvoiceForm />} />
             <Route path="/products" element={<ProductList />} />
-                        <Route path="/products/new" element={<ProductForm />} />
-                                    <Route path="/warehouses" element={<WarehouseList />} />
+            <Route path="/products/new" element={<ProductForm />} />
+            <Route path="/warehouses" element={<WarehouseList />} />
             <Route path="/warehouses/new" element={<WarehouseForm />} />
             <Route path="/warehouses/edit/:id" element={<WarehouseForm />} />
-                                    <Route path="/inventory" element={<InventoryList />} />
+            <Route path="/inventory" element={<InventoryList />} />
             <Route path="/clients" element={<Client />} />
-            <Route path="/add-sale-invoice/:clientId" element={<AddSaleInvoice />} />
+            <Route
+              path="/add-sale-invoice/:clientId"
+              element={<AddSaleInvoice />}
+            />
             <Route path="/selling" element={<Selling />} />
+            <Route path="/cashiers" element={<Cashiers />} />
 
             {/* Catch all route */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
       </AuthProvider>

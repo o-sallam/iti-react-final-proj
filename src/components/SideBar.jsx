@@ -159,6 +159,20 @@ const SideBar = ({ sidebarToggle }) => {
       hasDropdown: false,
     },
     {
+      id: "cashiers",
+      title: "الكاشيرز",
+      icon: (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="7" width="18" height="13" rx="2" fill="#667085"/>
+          <rect x="7" y="3" width="10" height="4" rx="1" fill="#667085"/>
+          <circle cx="8.5" cy="13.5" r="1.5" fill="#fff"/>
+          <rect x="12" y="12" width="5" height="3" rx="1" fill="#fff"/>
+        </svg>
+      ),
+      link: "/cashiers",
+      hasDropdown: false,
+    },
+    {
       id: "inventory",
       title: "المخزون",
       icon: (
